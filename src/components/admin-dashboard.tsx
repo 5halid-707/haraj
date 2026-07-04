@@ -42,6 +42,9 @@ import {
   Activity,
   Zap,
   Radio,
+  Store,
+  Ban,
+  Lock,
 } from "lucide-react";
 import { formatPrice, formatArabicDate, formatNumber } from "@/lib/format";
 import { FinancialReports } from "@/components/financial-reports";
@@ -49,6 +52,9 @@ import { CouponsTab } from "@/components/admin/coupons-tab";
 import { AffiliatesTab } from "@/components/admin/affiliates-tab";
 import { ActivityLogTab } from "@/components/admin/activity-log-tab";
 import { LiveStatsTab } from "@/components/admin/live-stats-tab";
+import { StoresTab } from "@/components/admin/stores-tab";
+import { BansTab } from "@/components/admin/bans-tab";
+import { TrustedPurchasesTab } from "@/components/admin/trusted-purchases-tab";
 
 type AdminStats = {
   totalUsers: number;
@@ -333,7 +339,7 @@ export function AdminDashboard({
             </div>
           ) : (
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-1 mb-4">
+              <TabsList className="grid grid-cols-3 sm:grid-cols-7 lg:grid-cols-13 gap-1 mb-4">
                 <TabsTrigger value="overview" className="font-cairo text-xs sm:text-sm">
                   <TrendingUp className="h-4 w-4 ml-1" />
                   نظرة عامة
@@ -358,6 +364,18 @@ export function AdminDashboard({
                       {txStats.pendingCount}
                     </Badge>
                   )}
+                </TabsTrigger>
+                <TabsTrigger value="stores" className="font-cairo text-xs sm:text-sm">
+                  <Store className="h-4 w-4 ml-1" />
+                  المتاجر
+                </TabsTrigger>
+                <TabsTrigger value="trusted" className="font-cairo text-xs sm:text-sm">
+                  <Lock className="h-4 w-4 ml-1" />
+                  موثوق
+                </TabsTrigger>
+                <TabsTrigger value="bans" className="font-cairo text-xs sm:text-sm">
+                  <Ban className="h-4 w-4 ml-1" />
+                  الحظر
                 </TabsTrigger>
                 <TabsTrigger value="coupons" className="font-cairo text-xs sm:text-sm">
                   <Ticket className="h-4 w-4 ml-1" />
@@ -670,6 +688,21 @@ export function AdminDashboard({
               {/* ===== LIVE STATS ===== */}
               <TabsContent value="livestats">
                 <LiveStatsTab />
+              </TabsContent>
+
+              {/* ===== STORES ===== */}
+              <TabsContent value="stores">
+                <StoresTab />
+              </TabsContent>
+
+              {/* ===== TRUSTED PURCHASES ===== */}
+              <TabsContent value="trusted">
+                <TrustedPurchasesTab />
+              </TabsContent>
+
+              {/* ===== BANS ===== */}
+              <TabsContent value="bans">
+                <BansTab />
               </TabsContent>
 
               {/* ===== COUPONS ===== */}

@@ -23,6 +23,10 @@ model User {
   avatar        String?
   isVerified    Boolean   @default(false)
   isAdmin       Boolean   @default(false)
+  isBanned      Boolean   @default(false)
+  banReason     String?
+  bannedAt      DateTime?
+  bannedById    String?
   rating        Float     @default(5.0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -47,6 +51,11 @@ model User {
   couponsRedeemed CouponRedemption[]
   // Activity log
   activities    ActivityLog[]
+  // Store (paid merchant account)
+  store         Store?
+  // Trusted purchases
+  trustedPurchasesAsBuyer  TrustedPurchase[] @relation("TrustedBuyer")
+  trustedPurchasesAsSeller TrustedPurchase[] @relation("TrustedSeller")
 }
 
 model Category {
@@ -69,14 +78,19 @@ model Listing {
   currency    String     @default("ريال")
   city        String
   district    String?
+  // GPS coordinates for "nearby" feature
+  latitude    Float?
+  longitude   Float?
   categoryId  String
   category    Category   @relation(fields: [categoryId], references: [id])
   userId      String
   user        User       @relation(fields: [userId], references: [id])
   images      String     // JSON array of image URLs
+  videoUrl    String?    // Optional video URL
   status      String     @default("active") // active, sold, expired
   isFeatured  Boolean    @default(false)
   isVerified  Boolean    @default(false)
+  isTrustedPurchase Boolean @default(false) // متاح للشراء الموثوق
   views       Int        @default(0)
   year        Int?       // For cars - year of manufacture
   kilometers  Int?       // For cars
@@ -87,6 +101,7 @@ model Listing {
   updatedAt   DateTime   @updatedAt
   comments    Comment[]
   favorites   Favorite[]
+  trustedPurchases TrustedPurchase[]
 }
 
 model Comment {
@@ -331,4 +346,78 @@ model Banner {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ===== STORES (PAID MERCHANT ACCOUNTS) =====
+
+model Store {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  logoUrl       String?
+  coverUrl      String?
+  // Contact info
+  phone         String
+  email         String?
+  city          String
+  address       String?
+  // Verification
+  isVerified    Boolean  @default(false)
+  verifiedAt    DateTime?
+  // License info (for real estate / cars)
+  licenseNumber String?
+  licenseImage  String?
+  // Subscription
+  subscriptionType String @default("free") // free, basic, premium, vip
+  subscriptionStart DateTime?
+  subscriptionEnd   DateTime?
+  // Stats
+  totalSales    Int      @default(0)
+  totalRevenue  Float    @default(0)
+  rating        Float    @default(5.0)
+  // Status
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ===== TRUSTED PURCHASE (ESCROW SERVICE) =====
+
+model TrustedPurchase {
+  id            String   @id @default(cuid())
+  listingId     String
+  listing       Listing  @relation(fields: [listingId], references: [id])
+  sellerId      String
+  seller        User     @relation("TrustedSeller", fields: [sellerId], references: [id])
+  buyerId       String
+  buyer         User     @relation("TrustedBuyer", fields: [buyerId], references: [id])
+  // Transaction
+  amount        Float
+  currency      String   @default("ريال")
+  status        String   @default("pending") // pending, paid, shipped, delivered, completed, cancelled, disputed
+  // Payment
+  paymentId     String?  // related Payment record
+  // Tracking
+  trackingNumber String?
+  shippingCompany String?
+  // Timeline
+  paidAt        DateTime?
+  shippedAt     DateTime?
+  deliveredAt   DateTime?
+  completedAt   DateTime?
+  cancelledAt   DateTime?
+  // Notes
+  buyerNote     String?
+  sellerNote    String?
+  adminNote     String?
+  // Dispute
+  disputeReason String?
+  disputedAt    DateTime?
+  disputeResolvedAt DateTime?
+  disputeResolution String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 
