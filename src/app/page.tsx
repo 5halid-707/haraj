@@ -393,17 +393,18 @@ export default function HarajHomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* ===== HEADER ===== */}
-      <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
+      {/* ===== HEADER (Haraj-style white header) ===== */}
+      <header className="sticky top-0 z-50 bg-white border-b border-border shadow-sm">
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex items-center gap-3 h-16">
+          {/* Top row: logo + nav + login */}
+          <div className="flex items-center gap-3 h-14">
             {/* Mobile menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="lg:hidden text-primary-foreground hover:bg-primary-foreground/10"
+                  className="lg:hidden text-foreground hover:bg-muted"
                   aria-label="القائمة"
                 >
                   <Menu className="h-6 w-6" />
@@ -465,40 +466,81 @@ export default function HarajHomePage() {
               </SheetContent>
             </Sheet>
 
-            {/* Logo */}
-            <a href="/" className="flex items-center gap-2 shrink-0">
-              <div className="bg-primary-foreground text-primary rounded-lg w-9 h-9 flex items-center justify-center font-cairo font-bold text-xl">
-                ح
-              </div>
-              <span className="font-cairo font-bold text-2xl hidden sm:block">حراج</span>
+            {/* Logo - Haraj style (blue text) */}
+            <a href="/" className="flex items-center gap-1 shrink-0">
+              <span className="font-cairo font-bold text-2xl text-primary">حراج</span>
             </a>
 
-            {/* Search bar */}
-            <div className="flex-1 max-w-2xl">
-              <div className="relative">
-                <Input
-                  type="search"
-                  placeholder="ابحث عن سيارة، عقار، جوال..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") fetchListings();
-                  }}
-                  className="bg-white text-foreground border-0 h-10 pr-10 pl-4 text-sm"
-                />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
+            {/* Desktop nav links - Haraj style */}
+            <nav className="hidden md:flex items-center gap-1 mr-2">
+              <button
+                className={`px-3 py-1.5 text-sm font-cairo rounded transition-colors ${selectedCategory === "all" ? "text-primary font-bold" : "text-foreground hover:text-primary"}`}
+                onClick={() => setSelectedCategory("all")}
+              >
+                الرئيسية
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm font-cairo rounded transition-colors ${selectedCategory === "cars" ? "text-primary font-bold" : "text-foreground hover:text-primary"}`}
+                onClick={() => setSelectedCategory("cars")}
+              >
+                حراج السيارات
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm font-cairo rounded transition-colors ${selectedCategory === "electronics" ? "text-primary font-bold" : "text-foreground hover:text-primary"}`}
+                onClick={() => setSelectedCategory("electronics")}
+              >
+                أجهزة
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm font-cairo rounded transition-colors ${selectedCategory === "animals" ? "text-primary font-bold" : "text-foreground hover:text-primary"}`}
+                onClick={() => setSelectedCategory("animals")}
+              >
+                مواشي وحيوانات وطيور
+              </button>
+              <button
+                className={`px-3 py-1.5 text-sm font-cairo rounded transition-colors ${selectedCategory === "furniture" ? "text-primary font-bold" : "text-foreground hover:text-primary"}`}
+                onClick={() => setSelectedCategory("furniture")}
+              >
+                اثاث
+              </button>
+              <button
+                className="px-3 py-1.5 text-sm font-cairo rounded text-foreground hover:text-primary flex items-center gap-1"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                خدمات
+              </button>
+              <button
+                className="px-3 py-1.5 text-sm font-cairo rounded text-foreground hover:text-primary"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                أقسام أكثر
+              </button>
+            </nav>
 
-            {/* Add listing button - requires auth */}
+            <div className="flex-1" />
+
+            {/* Search icon button */}
             <Button
-              variant="secondary"
-              className="bg-accent text-accent-foreground hover:bg-accent/90 font-cairo font-bold shrink-0"
+              variant="ghost"
+              size="icon"
+              className="text-foreground hover:bg-muted"
+              aria-label="بحث"
+              onClick={() => {
+                const el = document.getElementById("search-input");
+                if (el) el.focus();
+              }}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+
+            {/* Add listing button - Haraj style (blue) */}
+            <Button
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-cairo text-sm shrink-0"
               onClick={handleAddListingClick}
             >
               <Plus className="h-4 w-4 ml-1" />
-              <span className="hidden sm:inline">أضف إعلان</span>
-              <span className="sm:hidden">إعلان</span>
+              <span className="hidden sm:inline">اضافة عرض</span>
+              <span className="sm:hidden">عرض</span>
             </Button>
 
             {/* User account / login */}
@@ -508,7 +550,7 @@ export default function HarajHomePage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-primary-foreground hover:bg-primary-foreground/10"
+                  className="text-foreground hover:bg-muted"
                   aria-label="محفظتي"
                   title="محفظتي المالية"
                   onClick={() => setWalletOpen(true)}
@@ -519,22 +561,22 @@ export default function HarajHomePage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-primary-foreground hover:bg-primary-foreground/10 bg-primary-foreground/10"
+                    className="text-foreground hover:bg-muted bg-primary/10"
                     aria-label="لوحة الأدمن"
                     title="لوحة تحكم الأدمن"
                     onClick={() => setAdminOpen(true)}
                   >
-                    <Shield className="h-5 w-5" />
+                    <Shield className="h-5 w-5 text-primary" />
                   </Button>
                 )}
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-primary-foreground hover:bg-primary-foreground/10 shrink-0 gap-2"
+                  className="text-foreground hover:bg-muted shrink-0 gap-1.5"
                   onClick={() => setUserMenuOpen(true)}
                 >
-                  <Avatar className="h-7 w-7 border border-primary-foreground/30">
-                    <AvatarFallback className="bg-primary-foreground/20 text-primary-foreground text-xs font-cairo">
+                  <Avatar className="h-7 w-7">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-cairo">
                       {session?.user?.name?.slice(0, 2) || "ح"}
                     </AvatarFallback>
                   </Avatar>
@@ -547,45 +589,88 @@ export default function HarajHomePage() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-primary-foreground hover:bg-primary-foreground/10 shrink-0 gap-1.5"
+                className="text-primary hover:bg-primary/10 shrink-0 gap-1.5 font-cairo font-bold"
                 onClick={() => setAuthDialogOpen(true)}
               >
-                <LogIn className="h-5 w-5" />
-                <span className="hidden sm:inline font-cairo">دخول</span>
+                <LogIn className="h-4 w-4" />
+                <span className="hidden sm:inline">دخــــول</span>
               </Button>
             )}
           </div>
         </div>
 
-        {/* Categories nav bar - desktop */}
-        <div className="bg-primary-foreground/5 border-t border-primary-foreground/10 hidden lg:block">
-          <div className="container mx-auto px-4">
-            <nav className="flex items-center gap-1 h-10 overflow-x-auto">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`text-primary-foreground hover:bg-primary-foreground/10 ${selectedCategory === "all" ? "bg-primary-foreground/15" : ""}`}
+        {/* Search bar row - Haraj style (full width below header) */}
+        <div className="container mx-auto px-3 sm:px-4 pb-3">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 relative">
+              <Input
+                id="search-input"
+                type="search"
+                placeholder="ابحث عن سلعة..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") fetchListings();
+                }}
+                className="bg-muted/50 border-border h-10 pr-10 pl-4 text-sm"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="font-cairo text-sm border-primary text-primary hover:bg-primary/5"
+              onClick={() => {
+                if (!navigator.geolocation) {
+                  toast({ title: "GPS غير مدعوم", variant: "destructive" });
+                  return;
+                }
+                toast({ title: "جارٍ تحديد موقعك...", duration: 1500 });
+                navigator.geolocation.getCurrentPosition(
+                  async (pos) => {
+                    const res = await fetch(`/api/listings/nearby?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}&radius=50`);
+                    if (res.ok) {
+                      const data = await res.json();
+                      setListings(data.listings);
+                      toast({ title: `وجدنا ${data.count} إعلان قريب منك`, duration: 2000 });
+                    }
+                  },
+                  () => toast({ title: "تعذر الوصول لموقعك", variant: "destructive" })
+                );
+              }}
+            >
+              <MapPin className="h-4 w-4 ml-1" />
+              القريب
+            </Button>
+          </div>
+        </div>
+
+        {/* Category pills row - Haraj style horizontal scroll */}
+        <div className="bg-primary/5 border-t border-b border-border">
+          <div className="container mx-auto px-3 sm:px-4">
+            <div className="flex items-center gap-1 h-11 overflow-x-auto scrollbar-thin">
+              <button
+                className={`px-3 py-1.5 text-xs sm:text-sm font-cairo whitespace-nowrap rounded-full transition-colors ${selectedCategory === "all" ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-primary/10"}`}
                 onClick={() => setSelectedCategory("all")}
               >
-                <Home className="h-4 w-4 ml-1" />
                 الرئيسية
-              </Button>
-              {categories.map((cat) => {
-                const Icon = CATEGORY_ICONS[cat.slug] || Home;
-                return (
-                  <Button
-                    key={cat.id}
-                    variant="ghost"
-                    size="sm"
-                    className={`text-primary-foreground hover:bg-primary-foreground/10 whitespace-nowrap ${selectedCategory === cat.slug ? "bg-primary-foreground/15" : ""}`}
-                    onClick={() => setSelectedCategory(cat.slug)}
-                  >
-                    <Icon className="h-4 w-4 ml-1" />
-                    {cat.name}
-                  </Button>
-                );
-              })}
-            </nav>
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`px-3 py-1.5 text-xs sm:text-sm font-cairo whitespace-nowrap rounded-full transition-colors ${selectedCategory === cat.slug ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-primary/10"}`}
+                  onClick={() => setSelectedCategory(cat.slug)}
+                >
+                  {cat.name}
+                </button>
+              ))}
+              <button
+                className="px-3 py-1.5 text-xs sm:text-sm font-cairo whitespace-nowrap rounded-full text-muted-foreground hover:bg-muted shrink-0"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                المزيد
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -934,75 +1019,146 @@ export default function HarajHomePage() {
         }}
       />
 
-      {/* ===== FOOTER ===== */}
-      <footer className="mt-auto bg-primary text-primary-foreground">
+      {/* ===== FOOTER (Haraj-style comprehensive footer) ===== */}
+      <footer className="mt-auto bg-muted/30 border-t border-border">
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="bg-primary-foreground text-primary rounded-lg w-10 h-10 flex items-center justify-center font-cairo font-bold text-2xl">
-                  ح
+          {/* App store badges */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+            <a href="#" className="hover:opacity-80 transition-opacity">
+              <div className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-2">
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                <div className="text-right">
+                  <div className="text-[10px]">Download on the</div>
+                  <div className="text-sm font-bold">App Store</div>
                 </div>
-                <span className="font-cairo font-bold text-2xl">حراج</span>
               </div>
-              <p className="text-sm text-primary-foreground/80 leading-relaxed">
-                أكبر سوق للإعلانات المبوبة في المملكة العربية السعودية. حراج حيث تجد كل ما تحتاجه من سيارات وعقارات وأجهزة وأكثر.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-cairo font-bold mb-3">الأقسام</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/80">
-                {categories.slice(0, 5).map((cat) => (
-                  <li key={cat.id}>
-                    <button
-                      onClick={() => setSelectedCategory(cat.slug)}
-                      className="hover:text-primary-foreground"
-                    >
-                      {cat.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-cairo font-bold mb-3">روابط مهمة</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li><a href="#" className="hover:text-primary-foreground">عن حراج</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">اتصل بنا</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">الشروط والأحكام</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">سياسة الخصوصية</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">المساعدة</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-cairo font-bold mb-3">تواصل معنا</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  <span dir="ltr">0575015019</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4" />
-                  <span>واتساب: <span dir="ltr">0575015019</span></span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>جدة، المملكة العربية السعودية</span>
-                </li>
-              </ul>
-            </div>
+            </a>
+            <a href="#" className="hover:opacity-80 transition-opacity">
+              <div className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-2">
+                <svg className="h-6 w-6" viewBox="0 0 24 24"><path fill="#34A853" d="M16.81 10.44L4.66 3.4l9.41 9.66z"/><path fill="#FBBC04" d="M19.36 12.93l-2.55-1.47-2.86 2.6 2.86 2.6 2.55-1.47c.85-.49.85-1.77 0-2.26z"/><path fill="#EA4335" d="M4.66 3.4c-.02.07-.03.14-.03.22v16.76c0 .08.01.15.03.22l9.45-9.66z"/><path fill="#4285F4" d="M14.11 12.94L4.66 3.4c.18-.62.74-1.06 1.4-1.06.26 0 .51.07.74.2l12.16 7.04z"/></svg>
+                <div className="text-right">
+                  <div className="text-[10px]">GET IT ON</div>
+                  <div className="text-sm font-bold">Google Play</div>
+                </div>
+              </div>
+            </a>
+            <a href="#" className="hover:opacity-80 transition-opacity">
+              <div className="bg-black text-white rounded-lg px-4 py-2 flex items-center gap-2">
+                <span className="text-lg font-bold">H</span>
+                <div className="text-right">
+                  <div className="text-[10px]">Download on</div>
+                  <div className="text-sm font-bold">Huawei</div>
+                </div>
+              </div>
+            </a>
           </div>
 
-          <Separator className="my-6 bg-primary-foreground/20" />
+          {/* Real estate note */}
+          <div className="text-center mb-6 text-xs text-muted-foreground">
+            <p>قسم العقارات في منصة حراج يتم تشغيله بواسطة رخصة وساطة وتسويق معتمدة</p>
+          </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-primary-foreground/70">
-            <p>© 2026 حراج. جميع الحقوق محفوظة.</p>
-            <p className="flex items-center gap-2">
-              صُنع بكل حب في المملكة العربية السعودية
-            </p>
+          {/* Footer links - Haraj style */}
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-foreground mb-6">
+            <a href="#" className="hover:text-primary">تسجيل حساب</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">سداد رسوم الموقع</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">الاشتراك السنوي للمتجر</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">زيادة مشاهدات العروض</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">اتفاقية الاستخدام</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">خدمة الشراء الموثوق</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">توثيق المتجر وإضافة التراخيص</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">مركز الأمان</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">نظام التقييم</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">نظام الخصم</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">الحسابات والأرقام الموقوفة</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">قائمة السلع والعروض الممنوعة</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">الأسئلة الشائعة</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">سياسة الخصوصية</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">سياسة الملكية الفكرية</a>
+            <span className="text-border">|</span>
+            <a href="#" className="hover:text-primary">اتصل بنا</a>
+          </div>
+
+          {/* Social media icons */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            {[
+              { name: "twitter", path: "M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z" },
+              { name: "tiktok", path: "M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" },
+              { name: "snapchat", path: "M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.791 4.014.255.044.435.27.42.509 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.294 1.288-.06 0-.119-.015-.18-.015h-.149c-1.468 0-2.427-.675-3.279-1.288-.599-.42-1.107-.78-1.707-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.189-1.226-.031-.063-.052-.15-.055-.225-.015-.243.165-.465.42-.509 3.264-.54 4.73-3.879 4.791-4.02l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.299 1.104.299.234 0 .384-.06.465-.105l-.046-.569c-.098-1.626-.225-3.651.307-4.837C7.392 1.077 10.739.807 11.727.807l.434-.015h.045z" },
+              { name: "instagram", path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" },
+              { name: "facebook", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
+              { name: "youtube", path: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
+            ].map((social) => (
+              <a
+                key={social.name}
+                href="#"
+                aria-label={social.name}
+                className="w-9 h-9 rounded-full bg-foreground/10 hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-colors"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d={social.path} />
+                </svg>
+              </a>
+            ))}
+          </div>
+
+          {/* Font size controls + company info */}
+          <div className="flex flex-col items-center gap-3 text-xs text-muted-foreground border-t border-border pt-6">
+            <div className="flex items-center gap-3">
+              <span>حجم الخط:</span>
+              <button
+                onClick={() => {
+                  document.documentElement.style.fontSize = "14px";
+                  toast({ title: "تم تصغير الخط", duration: 1500 });
+                }}
+                className="w-7 h-7 rounded border border-border hover:bg-muted flex items-center justify-center"
+                aria-label="تصغير الخط"
+              >
+                <span className="text-xs">-A</span>
+              </button>
+              <button
+                onClick={() => {
+                  document.documentElement.style.fontSize = "16px";
+                  toast({ title: "حجم الخط الافتراضي", duration: 1500 });
+                }}
+                className="w-7 h-7 rounded border border-border hover:bg-muted flex items-center justify-center"
+                aria-label="حجم افتراضي"
+              >
+                <span className="text-sm">A</span>
+              </button>
+              <button
+                onClick={() => {
+                  document.documentElement.style.fontSize = "18px";
+                  toast({ title: "تم تكبير الخط", duration: 1500 });
+                }}
+                className="w-7 h-7 rounded border border-border hover:bg-muted flex items-center justify-center"
+                aria-label="تكبير الخط"
+              >
+                <span className="text-base">+A</span>
+              </button>
+            </div>
+
+            <div className="text-center">
+              <p className="font-cairo font-bold text-foreground mb-1">مؤسسة موقع حراج لتقنية المعلومات</p>
+              <p className="text-[10px]">N0.0.1, 2026-06-25 10</p>
+              <p className="text-[10px]">الرقم الضريبي: 300710482300003</p>
+            </div>
+
+            <p className="text-[10px] mt-2">© 2026 حراج. جميع الحقوق محفوظة.</p>
           </div>
         </div>
       </footer>
@@ -1010,7 +1166,7 @@ export default function HarajHomePage() {
   );
 }
 
-// ===== LISTING CARD COMPONENT =====
+// ===== LISTING CARD COMPONENT (Haraj-style) =====
 function ListingCard({
   listing,
   onOpen,
@@ -1034,16 +1190,30 @@ function ListingCard({
     }
   })();
   const coverImage = images[0];
+  const sellerInitial = listing.user.username.charAt(0);
 
   return (
-    <Card
-      className="haraj-card overflow-hidden cursor-pointer p-0 group relative"
+    <div
+      className="bg-white border border-border rounded-lg overflow-hidden cursor-pointer hover:border-primary hover:shadow-md transition-all group"
       onClick={onOpen}
     >
+      {/* Top: seller info bar */}
+      <div className="flex items-center gap-2 p-2 bg-muted/30 border-b border-border">
+        <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+          <span className="font-cairo font-bold text-primary text-xs">{sellerInitial}</span>
+        </div>
+        <span className="text-xs text-muted-foreground font-cairo truncate flex-1">{listing.user.username}</span>
+        {listing.isFeatured && (
+          <Badge className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0 h-5">
+            <Award className="h-2.5 w-2.5 ml-0.5" />
+            مميز
+          </Badge>
+        )}
+      </div>
+
       {/* Image */}
       <div className="aspect-[4/3] bg-muted relative overflow-hidden">
         {coverImage ? (
-           
           <img
             src={coverImage}
             alt={listing.title}
@@ -1054,14 +1224,6 @@ function ListingCard({
           <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
             <ImageIcon className="h-10 w-10 mb-1" />
             <span className="text-xs">لا توجد صورة</span>
-          </div>
-        )}
-
-        {/* Featured ribbon */}
-        {listing.isFeatured && (
-          <div className="absolute top-0 right-0 featured-ribbon text-primary-foreground text-xs font-bold px-2 py-1 rounded-bl-md flex items-center gap-1">
-            <Award className="h-3 w-3" />
-            مميز
           </div>
         )}
 
@@ -1099,14 +1261,14 @@ function ListingCard({
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-1.5">
+      <div className="p-2.5 space-y-1">
         {/* Title */}
-        <h3 className={`font-cairo font-bold leading-snug line-clamp-2 ${compact ? "text-sm" : "text-sm sm:text-base"}`}>
+        <h3 className="font-cairo text-sm leading-snug line-clamp-2 text-foreground">
           {listing.title}
         </h3>
 
         {/* Price */}
-        <div className="text-primary font-cairo font-bold text-base sm:text-lg tabular-nums">
+        <div className="text-primary font-cairo font-bold text-base tabular-nums">
           {formatPrice(listing.price, listing.currency)}
         </div>
 
@@ -1114,7 +1276,7 @@ function ListingCard({
         {listing.year && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>{listing.year}</span>
-            {listing.kilometers && (
+            {listing.kilometers != null && (
               <>
                 <span>•</span>
                 <span>{formatKilometers(listing.kilometers)}</span>
@@ -1123,28 +1285,19 @@ function ListingCard({
           </div>
         )}
 
-        {/* Location */}
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="h-3 w-3" />
-          <span className="line-clamp-1">
-            {listing.city}
-            {listing.district && ` - ${listing.district}`}
-          </span>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-1.5 border-t border-border">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        {/* Location + time */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-border">
+          <div className="flex items-center gap-1">
+            <MapPin className="h-3 w-3" />
+            <span className="line-clamp-1">{listing.city}</span>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
             <Clock className="h-3 w-3" />
             <span>{formatArabicDate(new Date(listing.createdAt))}</span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Eye className="h-3 w-3" />
-            <span>{formatNumber(listing.views)}</span>
-          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
