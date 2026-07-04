@@ -1,0 +1,72 @@
+// Prisma schema for Haraj-like classifieds website
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  phone     String
+  city      String?
+  avatar    String?
+  isVerified Boolean @default(false)
+  rating    Float    @default(5.0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  listings  Listing[]
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  icon      String?
+  parentId  String?
+  parent    Category? @relation("CategoryParent", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryParent")
+  listings  Listing[]
+  createdAt DateTime  @default(now())
+}
+
+model Listing {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Int
+  currency    String   @default("ريال")
+  city        String
+  district    String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  images      String   // JSON array of image URLs
+  status      String   @default("active") // active, sold, expired
+  isFeatured  Boolean  @default(false)
+  isVerified  Boolean  @default(false)
+  views       Int      @default(0)
+  year        Int?     // For cars - year of manufacture
+  kilometers  Int?     // For cars
+  condition   String?  // new, used
+  phone       String
+  whatsapp    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  comments    Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  username  String
+  content   String
+  phone     String?
+  createdAt DateTime @default(now())
+}

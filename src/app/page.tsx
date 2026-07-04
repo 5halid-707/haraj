@@ -1,0 +1,1571 @@
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import {
+  Search,
+  MapPin,
+  Phone,
+  MessageCircle,
+  Eye,
+  Clock,
+  Star,
+  Plus,
+  ChevronLeft,
+  Menu,
+  X,
+  Home,
+  Car,
+  Building2,
+  Smartphone,
+  Sofa,
+  Briefcase,
+  PawPrint,
+  Wrench,
+  User,
+  Heart,
+  Share2,
+  Image as ImageIcon,
+  TrendingUp,
+  Award,
+  ShieldCheck,
+  Verified,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { formatPrice, formatArabicDate, formatNumber, formatKilometers } from "@/lib/format";
+
+// ===== TYPES =====
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string | null;
+  children: Category[];
+};
+
+type Listing = {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  currency: string;
+  city: string;
+  district: string | null;
+  year: number | null;
+  kilometers: number | null;
+  condition: string | null;
+  images: string;
+  isFeatured: boolean;
+  views: number;
+  phone: string;
+  whatsapp: string | null;
+  createdAt: string;
+  category: { id: string; name: string; slug: string };
+  user: { id: string; username: string; isVerified: boolean; rating: number };
+  comments: { id: string; username: string; content: string; createdAt: string }[];
+};
+
+// ===== CONSTANTS =====
+const CATEGORY_ICONS: Record<string, typeof Car> = {
+  cars: Car,
+  realestate: Building2,
+  electronics: Smartphone,
+  furniture: Sofa,
+  jobs: Briefcase,
+  animals: PawPrint,
+  services: Wrench,
+};
+
+const SAUDI_CITIES = [
+  "الرياض",
+  "جدة",
+  "مكة",
+  "المدينة",
+  "الدمام",
+  "الخبر",
+  "الطائف",
+  "بريدة",
+  "أبها",
+  "تبوك",
+  "حائل",
+  "الأحساء",
+];
+
+export default function HarajHomePage() {
+  const { toast } = useToast();
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Filters
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCity, setSelectedCity] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("newest");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+
+  // UI state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Fetch listings
+  const fetchListings = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (selectedCategory !== "all") params.set("category", selectedCategory);
+      if (selectedCity !== "all") params.set("city", selectedCity);
+      if (searchQuery) params.set("search", searchQuery);
+      if (minPrice) params.set("minPrice", minPrice);
+      if (maxPrice) params.set("maxPrice", maxPrice);
+      if (showFeaturedOnly) params.set("featured", "true");
+      params.set("sort", sortBy);
+
+      const res = await fetch(`/api/listings?${params.toString()}`);
+      if (!res.ok) throw new Error("فشل في تحميل الإعلانات");
+      const data = await res.json();
+      setListings(data.listings || []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "حدث خطأ غير متوقع");
+      toast({
+        title: "خطأ",
+        description: "تعذر تحميل الإعلانات. حاول مرة أخرى.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch categories once
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((data) => setCategories(data.categories || []))
+      .catch(() => {});
+  }, []);
+
+  // Fetch listings when filters change
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      fetchListings();
+    }, 300);
+    return () => clearTimeout(debounce);
+     
+  }, [selectedCategory, selectedCity, sortBy, minPrice, maxPrice, showFeaturedOnly]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchListings();
+     
+  }, []);
+
+  // Featured listings (separate section)
+  const featuredListings = useMemo(() => {
+    return listings.filter((l) => l.isFeatured).slice(0, 6);
+  }, [listings]);
+
+  // Toggle favorite
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        toast({ title: "أُزيل من المفضلة", duration: 1500 });
+      } else {
+        next.add(id);
+        toast({ title: "أُضيف إلى المفضلة", duration: 1500 });
+      }
+      return next;
+    });
+  };
+
+  // Share listing
+  const shareListing = (listing: Listing) => {
+    const url = `${window.location.origin}/?listing=${listing.id}`;
+    if (navigator.share) {
+      navigator.share({
+        title: listing.title,
+        text: `شوف هذا الإعلان على حراج: ${listing.title}`,
+        url,
+      });
+    } else {
+      navigator.clipboard.writeText(url);
+      toast({ title: "تم نسخ الرابط", duration: 1500 });
+    }
+  };
+
+  // Reset filters
+  const resetFilters = () => {
+    setSelectedCategory("all");
+    setSelectedCity("all");
+    setSearchQuery("");
+    setMinPrice("");
+    setMaxPrice("");
+    setShowFeaturedOnly(false);
+    setSortBy("newest");
+  };
+
+  const activeFiltersCount =
+    (selectedCategory !== "all" ? 1 : 0) +
+    (selectedCity !== "all" ? 1 : 0) +
+    (searchQuery ? 1 : 0) +
+    (minPrice ? 1 : 0) +
+    (maxPrice ? 1 : 0) +
+    (showFeaturedOnly ? 1 : 0);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* ===== HEADER ===== */}
+      <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-lg">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="flex items-center gap-3 h-16">
+            {/* Mobile menu */}
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden text-primary-foreground hover:bg-primary-foreground/10"
+                  aria-label="القائمة"
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80 overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle className="text-right">الأقسام</SheetTitle>
+                </SheetHeader>
+                <div className="mt-4 space-y-1">
+                  <Button
+                    variant={selectedCategory === "all" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setSelectedCategory("all");
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <Home className="h-4 w-4 ml-2" />
+                    جميع الأقسام
+                  </Button>
+                  {categories.map((cat) => {
+                    const Icon = CATEGORY_ICONS[cat.slug] || Home;
+                    return (
+                      <div key={cat.id}>
+                        <Button
+                          variant={selectedCategory === cat.slug ? "default" : "ghost"}
+                          className="w-full justify-start"
+                          onClick={() => {
+                            setSelectedCategory(cat.slug);
+                            setMobileMenuOpen(false);
+                          }}
+                        >
+                          <Icon className="h-4 w-4 ml-2" />
+                          {cat.name}
+                        </Button>
+                        {cat.children.length > 0 && (
+                          <div className="pr-4 mt-1 space-y-1">
+                            {cat.children.map((child) => (
+                              <Button
+                                key={child.id}
+                                variant={selectedCategory === child.slug ? "secondary" : "ghost"}
+                                size="sm"
+                                className="w-full justify-start text-sm"
+                                onClick={() => {
+                                  setSelectedCategory(child.slug);
+                                  setMobileMenuOpen(false);
+                                }}
+                              >
+                                {child.name}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            {/* Logo */}
+            <a href="/" className="flex items-center gap-2 shrink-0">
+              <div className="bg-primary-foreground text-primary rounded-lg w-9 h-9 flex items-center justify-center font-cairo font-bold text-xl">
+                ح
+              </div>
+              <span className="font-cairo font-bold text-2xl hidden sm:block">حراج</span>
+            </a>
+
+            {/* Search bar */}
+            <div className="flex-1 max-w-2xl">
+              <div className="relative">
+                <Input
+                  type="search"
+                  placeholder="ابحث عن سيارة، عقار، جوال..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") fetchListings();
+                  }}
+                  className="bg-white text-foreground border-0 h-10 pr-10 pl-4 text-sm"
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+
+            {/* Add listing button */}
+            <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="bg-accent text-accent-foreground hover:bg-accent/90 font-cairo font-bold shrink-0"
+                >
+                  <Plus className="h-4 w-4 ml-1" />
+                  <span className="hidden sm:inline">أضف إعلان</span>
+                  <span className="sm:hidden">إعلان</span>
+                </Button>
+              </DialogTrigger>
+              <AddListingDialog
+                categories={categories}
+                onClose={() => setAddDialogOpen(false)}
+                onAdded={() => {
+                  setAddDialogOpen(false);
+                  fetchListings();
+                }}
+              />
+            </Dialog>
+
+            {/* User account */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-primary-foreground hover:bg-primary-foreground/10 hidden sm:flex"
+              aria-label="حسابي"
+              onClick={() => toast({ title: "قريباً", description: "تسجيل الدخول قيد التطوير", duration: 1500 })}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Categories nav bar - desktop */}
+        <div className="bg-primary-foreground/5 border-t border-primary-foreground/10 hidden lg:block">
+          <div className="container mx-auto px-4">
+            <nav className="flex items-center gap-1 h-10 overflow-x-auto">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`text-primary-foreground hover:bg-primary-foreground/10 ${selectedCategory === "all" ? "bg-primary-foreground/15" : ""}`}
+                onClick={() => setSelectedCategory("all")}
+              >
+                <Home className="h-4 w-4 ml-1" />
+                الرئيسية
+              </Button>
+              {categories.map((cat) => {
+                const Icon = CATEGORY_ICONS[cat.slug] || Home;
+                return (
+                  <Button
+                    key={cat.id}
+                    variant="ghost"
+                    size="sm"
+                    className={`text-primary-foreground hover:bg-primary-foreground/10 whitespace-nowrap ${selectedCategory === cat.slug ? "bg-primary-foreground/15" : ""}`}
+                    onClick={() => setSelectedCategory(cat.slug)}
+                  >
+                    <Icon className="h-4 w-4 ml-1" />
+                    {cat.name}
+                  </Button>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* ===== MAIN CONTENT ===== */}
+      <main className="flex-1 container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="flex gap-6">
+          {/* Sidebar - Desktop */}
+          <aside className="hidden lg:block w-64 shrink-0">
+            <div className="sticky top-32 space-y-4">
+              {/* Categories */}
+              <Card className="p-3">
+                <h3 className="font-cairo font-bold text-base mb-3 px-2 flex items-center gap-2">
+                  <Menu className="h-4 w-4" />
+                  الأقسام
+                </h3>
+                <div className="space-y-1">
+                  <Button
+                    variant={selectedCategory === "all" ? "default" : "ghost"}
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => setSelectedCategory("all")}
+                  >
+                    <Home className="h-4 w-4 ml-2" />
+                    جميع الأقسام
+                  </Button>
+                  {categories.map((cat) => {
+                    const Icon = CATEGORY_ICONS[cat.slug] || Home;
+                    const isActive = selectedCategory === cat.slug;
+                    return (
+                      <div key={cat.id}>
+                        <Button
+                          variant={isActive ? "default" : "ghost"}
+                          size="sm"
+                          className="w-full justify-start"
+                          onClick={() => setSelectedCategory(cat.slug)}
+                        >
+                          <Icon className="h-4 w-4 ml-2" />
+                          {cat.name}
+                        </Button>
+                        {cat.children.length > 0 && (
+                          <div className="pr-4 mt-0.5 mb-1 space-y-0.5">
+                            {cat.children.map((child) => (
+                              <button
+                                key={child.id}
+                                onClick={() => setSelectedCategory(child.slug)}
+                                className={`block w-full text-right px-3 py-1.5 text-xs rounded-md transition-colors category-chip ${
+                                  selectedCategory === child.slug
+                                    ? "bg-primary text-primary-foreground"
+                                    : "text-muted-foreground hover:bg-accent"
+                                }`}
+                              >
+                                {child.icon} {child.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+
+              {/* Filters */}
+              <Card className="p-3">
+                <h3 className="font-cairo font-bold text-base mb-3 px-2 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Search className="h-4 w-4" />
+                    الفلاتر
+                  </span>
+                  {activeFiltersCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={resetFilters}
+                      className="h-6 text-xs"
+                    >
+                      مسح الكل
+                    </Button>
+                  )}
+                </h3>
+                <div className="space-y-3 px-2">
+                  <div>
+                    <Label className="text-xs mb-1 block">المدينة</Label>
+                    <Select value={selectedCity} onValueChange={setSelectedCity}>
+                      <SelectTrigger className="h-9 text-sm">
+                        <SelectValue placeholder="كل المدن" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">كل المدن</SelectItem>
+                        {SAUDI_CITIES.map((c) => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-xs mb-1 block">السعر (ريال)</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder="من"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        className="h-9 text-sm"
+                      />
+                      <Input
+                        type="number"
+                        placeholder="إلى"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="featured"
+                      checked={showFeaturedOnly}
+                      onChange={(e) => setShowFeaturedOnly(e.target.checked)}
+                      className="rounded border-input"
+                    />
+                    <Label htmlFor="featured" className="text-xs cursor-pointer">
+                      المميزة فقط
+                    </Label>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Stats card */}
+              <Card className="p-4 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldCheck className="h-5 w-5" />
+                  <h4 className="font-cairo font-bold">إعلانات موثوقة</h4>
+                </div>
+                <p className="text-xs text-primary-foreground/80 leading-relaxed">
+                  جميع الإعلانات على حراج تمر عبر نظام تحقق لضمان جودة المعروضات وأمان المشترين.
+                </p>
+              </Card>
+            </div>
+          </aside>
+
+          {/* Listings column */}
+          <div className="flex-1 min-w-0">
+            {/* Breadcrumb / Title */}
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div className="flex items-center gap-2 text-sm">
+                <Home className="h-4 w-4 text-muted-foreground" />
+                <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">الإعلانات</span>
+                {selectedCategory !== "all" && (
+                  <>
+                    <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-cairo font-bold">
+                      {categories.find((c) => c.slug === selectedCategory)?.name ||
+                        categories.flatMap((c) => c.children).find((c) => c.slug === selectedCategory)?.name ||
+                        selectedCategory}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {loading ? "..." : `${listings.length} إعلان`}
+                </span>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-36 h-9 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">الأحدث</SelectItem>
+                    <SelectItem value="price_low">الأرخص أولاً</SelectItem>
+                    <SelectItem value="price_high">الأغلى أولاً</SelectItem>
+                    <SelectItem value="popular">الأكثر مشاهدة</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Featured section */}
+            {!showFeaturedOnly && selectedCategory === "all" && !searchQuery && featuredListings.length > 0 && (
+              <section className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Award className="h-5 w-5 text-primary" />
+                  <h2 className="font-cairo font-bold text-lg">إعلانات مميزة</h2>
+                  <Badge variant="secondary" className="bg-accent text-accent-foreground">
+                    <TrendingUp className="h-3 w-3 ml-1" />
+                    مميز
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                  {featuredListings.map((listing) => (
+                    <ListingCard
+                      key={listing.id}
+                      listing={listing}
+                      onOpen={() => setSelectedListing(listing)}
+                      isFavorite={favorites.has(listing.id)}
+                      onToggleFavorite={() => toggleFavorite(listing.id)}
+                      onShare={() => shareListing(listing)}
+                      compact
+                    />
+                  ))}
+                </div>
+                <Separator className="mt-6" />
+              </section>
+            )}
+
+            {/* All listings */}
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <h2 className="font-cairo font-bold text-lg">
+                  {showFeaturedOnly ? "الإعلانات المميزة" : "أحدث الإعلانات"}
+                </h2>
+              </div>
+
+              {/* Error state */}
+              {error && !loading && (
+                <Card className="p-8 text-center">
+                  <p className="text-destructive mb-4">{error}</p>
+                  <Button onClick={fetchListings}>إعادة المحاولة</Button>
+                </Card>
+              )}
+
+              {/* Loading state */}
+              {loading && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-[4/3] w-full" />
+                      <div className="p-3 space-y-2">
+                        <Skeleton className="h-3 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-3 w-2/3" />
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Empty state */}
+              {!loading && !error && listings.length === 0 && (
+                <Card className="p-12 text-center">
+                  <Search className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                  <h3 className="font-cairo font-bold text-lg mb-1">لا توجد إعلانات مطابقة</h3>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    جرّب تغيير الفلاتر أو أضف إعلانك الخاص
+                  </p>
+                  <div className="flex gap-2 justify-center">
+                    <Button variant="outline" onClick={resetFilters}>مسح الفلاتر</Button>
+                    <Button onClick={() => setAddDialogOpen(true)}>
+                      <Plus className="h-4 w-4 ml-1" />
+                      أضف إعلان
+                    </Button>
+                  </div>
+                </Card>
+              )}
+
+              {/* Grid */}
+              {!loading && !error && listings.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {listings.map((listing) => (
+                    <ListingCard
+                      key={listing.id}
+                      listing={listing}
+                      onOpen={() => setSelectedListing(listing)}
+                      isFavorite={favorites.has(listing.id)}
+                      onToggleFavorite={() => toggleFavorite(listing.id)}
+                      onShare={() => shareListing(listing)}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        </div>
+      </main>
+
+      {/* ===== DETAIL DIALOG ===== */}
+      <ListingDetailDialog
+        listing={selectedListing}
+        onClose={() => setSelectedListing(null)}
+        onToggleFavorite={toggleFavorite}
+        isFavorite={selectedListing ? favorites.has(selectedListing.id) : false}
+      />
+
+      {/* ===== FOOTER ===== */}
+      <footer className="mt-auto bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="bg-primary-foreground text-primary rounded-lg w-10 h-10 flex items-center justify-center font-cairo font-bold text-2xl">
+                  ح
+                </div>
+                <span className="font-cairo font-bold text-2xl">حراج</span>
+              </div>
+              <p className="text-sm text-primary-foreground/80 leading-relaxed">
+                أكبر سوق للإعلانات المبوبة في المملكة العربية السعودية. حراج حيث تجد كل ما تحتاجه من سيارات وعقارات وأجهزة وأكثر.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-cairo font-bold mb-3">الأقسام</h4>
+              <ul className="space-y-2 text-sm text-primary-foreground/80">
+                {categories.slice(0, 5).map((cat) => (
+                  <li key={cat.id}>
+                    <button
+                      onClick={() => setSelectedCategory(cat.slug)}
+                      className="hover:text-primary-foreground"
+                    >
+                      {cat.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-cairo font-bold mb-3">روابط مهمة</h4>
+              <ul className="space-y-2 text-sm text-primary-foreground/80">
+                <li><a href="#" className="hover:text-primary-foreground">عن حراج</a></li>
+                <li><a href="#" className="hover:text-primary-foreground">اتصل بنا</a></li>
+                <li><a href="#" className="hover:text-primary-foreground">الشروط والأحكام</a></li>
+                <li><a href="#" className="hover:text-primary-foreground">سياسة الخصوصية</a></li>
+                <li><a href="#" className="hover:text-primary-foreground">المساعدة</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-cairo font-bold mb-3">تواصل معنا</h4>
+              <ul className="space-y-2 text-sm text-primary-foreground/80">
+                <li className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span>920000000</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>واتساب: 0550000000</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>الرياض، المملكة العربية السعودية</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <Separator className="my-6 bg-primary-foreground/20" />
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-primary-foreground/70">
+            <p>© 2026 حراج. جميع الحقوق محفوظة.</p>
+            <p className="flex items-center gap-2">
+              صُنع بكل حب في المملكة العربية السعودية
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// ===== LISTING CARD COMPONENT =====
+function ListingCard({
+  listing,
+  onOpen,
+  isFavorite,
+  onToggleFavorite,
+  onShare,
+  compact = false,
+}: {
+  listing: Listing;
+  onOpen: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+  onShare: () => void;
+  compact?: boolean;
+}) {
+  const images: string[] = (() => {
+    try {
+      return JSON.parse(listing.images);
+    } catch {
+      return [];
+    }
+  })();
+  const coverImage = images[0];
+
+  return (
+    <Card
+      className="haraj-card overflow-hidden cursor-pointer p-0 group relative"
+      onClick={onOpen}
+    >
+      {/* Image */}
+      <div className="aspect-[4/3] bg-muted relative overflow-hidden">
+        {coverImage ? (
+           
+          <img
+            src={coverImage}
+            alt={listing.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+            <ImageIcon className="h-10 w-10 mb-1" />
+            <span className="text-xs">لا توجد صورة</span>
+          </div>
+        )}
+
+        {/* Featured ribbon */}
+        {listing.isFeatured && (
+          <div className="absolute top-0 right-0 featured-ribbon text-primary-foreground text-xs font-bold px-2 py-1 rounded-bl-md flex items-center gap-1">
+            <Award className="h-3 w-3" />
+            مميز
+          </div>
+        )}
+
+        {/* Image count */}
+        {images.length > 1 && (
+          <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded flex items-center gap-1">
+            <ImageIcon className="h-3 w-3" />
+            {images.length}
+          </div>
+        )}
+
+        {/* Quick actions */}
+        <div className="absolute top-1 left-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite();
+            }}
+            className="bg-white/90 hover:bg-white rounded-full p-1.5 shadow-sm"
+            aria-label="أضف للمفضلة"
+          >
+            <Heart className={`h-3.5 w-3.5 ${isFavorite ? "fill-destructive text-destructive" : "text-foreground"}`} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare();
+            }}
+            className="bg-white/90 hover:bg-white rounded-full p-1.5 shadow-sm"
+            aria-label="مشاركة"
+          >
+            <Share2 className="h-3.5 w-3.5 text-foreground" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-3 space-y-1.5">
+        {/* Title */}
+        <h3 className={`font-cairo font-bold leading-snug line-clamp-2 ${compact ? "text-sm" : "text-sm sm:text-base"}`}>
+          {listing.title}
+        </h3>
+
+        {/* Price */}
+        <div className="text-primary font-cairo font-bold text-base sm:text-lg tabular-nums">
+          {formatPrice(listing.price, listing.currency)}
+        </div>
+
+        {/* Year/KM for cars */}
+        {listing.year && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>{listing.year}</span>
+            {listing.kilometers && (
+              <>
+                <span>•</span>
+                <span>{formatKilometers(listing.kilometers)}</span>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Location */}
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <MapPin className="h-3 w-3" />
+          <span className="line-clamp-1">
+            {listing.city}
+            {listing.district && ` - ${listing.district}`}
+          </span>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-1.5 border-t border-border">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            <span>{formatArabicDate(new Date(listing.createdAt))}</span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Eye className="h-3 w-3" />
+            <span>{formatNumber(listing.views)}</span>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// ===== LISTING DETAIL DIALOG =====
+function ListingDetailDialog({
+  listing,
+  onClose,
+  onToggleFavorite,
+  isFavorite,
+}: {
+  listing: Listing | null;
+  onClose: () => void;
+  onToggleFavorite: (id: string) => void;
+  isFavorite: boolean;
+}) {
+  const { toast } = useToast();
+  const [activeImage, setActiveImage] = useState(0);
+  const [commentName, setCommentName] = useState("");
+  const [commentText, setCommentText] = useState("");
+  const [commentPhone, setCommentPhone] = useState("");
+  const [comments, setComments] = useState<Listing["comments"]>([]);
+
+  useEffect(() => {
+    if (listing) {
+      setActiveImage(0);
+      setComments(listing.comments || []);
+    }
+  }, [listing]);
+
+  if (!listing) return null;
+
+  const safeComments = comments || [];
+
+  const images: string[] = (() => {
+    try {
+      return JSON.parse(listing.images);
+    } catch {
+      return [];
+    }
+  })();
+
+  const handleSubmitComment = async () => {
+    if (!commentName.trim() || !commentText.trim()) {
+      toast({
+        title: "بيانات ناقصة",
+        description: "الرجاء إدخال الاسم والتعليق",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listingId: listing.id,
+          username: commentName,
+          content: commentText,
+          phone: commentPhone || null,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setComments([data.comment, ...(comments || [])]);
+      setCommentName("");
+      setCommentText("");
+      setCommentPhone("");
+      toast({ title: "تم نشر تعليقك بنجاح", duration: 1500 });
+    } catch {
+      toast({
+        title: "خطأ",
+        description: "تعذر نشر التعليق",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCall = () => {
+    window.location.href = `tel:${listing.phone}`;
+  };
+
+  const handleWhatsApp = () => {
+    const phone = listing.whatsapp || listing.phone;
+    const cleanPhone = phone.replace(/^0/, "966");
+    const msg = `السلام عليكم، أنا مهتم بـ: ${listing.title}`;
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  return (
+    <Dialog open={!!listing} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogHeader className="p-4 border-b sticky top-0 bg-background z-10">
+          <DialogTitle className="text-right font-cairo text-lg line-clamp-1">
+            {listing.title}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="grid md:grid-cols-2 gap-4 p-4">
+          {/* Images */}
+          <div className="space-y-2">
+            <div className="aspect-[4/3] bg-muted rounded-lg overflow-hidden">
+              {images[activeImage] ? (
+                 
+                <img
+                  src={images[activeImage]}
+                  alt={listing.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                  <ImageIcon className="h-16 w-16 mb-2" />
+                  <span>لا توجد صورة</span>
+                </div>
+              )}
+            </div>
+            {images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImage(i)}
+                    className={`w-16 h-16 rounded-md overflow-hidden border-2 shrink-0 ${
+                      activeImage === i ? "border-primary" : "border-transparent"
+                    }`}
+                  >
+                    { }
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Details */}
+          <div className="space-y-4">
+            {/* Price */}
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-cairo font-bold text-primary tabular-nums">
+                  {formatPrice(listing.price, listing.currency)}
+                </div>
+                {listing.isFeatured && (
+                  <Badge variant="secondary" className="bg-accent text-accent-foreground mt-1">
+                    <Award className="h-3 w-3 ml-1" />
+                    إعلان مميز
+                  </Badge>
+                )}
+              </div>
+              <div className="flex gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onToggleFavorite(listing.id)}
+                  aria-label="مفضلة"
+                >
+                  <Heart className={`h-4 w-4 ${isFavorite ? "fill-destructive text-destructive" : ""}`} />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    const url = `${window.location.origin}/?listing=${listing.id}`;
+                    navigator.clipboard.writeText(url);
+                    toast({ title: "تم نسخ الرابط", duration: 1500 });
+                  }}
+                  aria-label="مشاركة"
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Specs grid */}
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="bg-muted/50 rounded-md p-2">
+                <div className="text-xs text-muted-foreground">القسم</div>
+                <div className="font-cairo">{listing.category.name}</div>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <div className="text-xs text-muted-foreground">المدينة</div>
+                <div className="font-cairo">{listing.city}</div>
+              </div>
+              {listing.district && (
+                <div className="bg-muted/50 rounded-md p-2">
+                  <div className="text-xs text-muted-foreground">الحي</div>
+                  <div className="font-cairo">{listing.district}</div>
+                </div>
+              )}
+              {listing.year && (
+                <div className="bg-muted/50 rounded-md p-2">
+                  <div className="text-xs text-muted-foreground">سنة الصنع</div>
+                  <div className="font-cairo">{listing.year}</div>
+                </div>
+              )}
+              {listing.kilometers != null && (
+                <div className="bg-muted/50 rounded-md p-2">
+                  <div className="text-xs text-muted-foreground">الممشى</div>
+                  <div className="font-cairo">{formatKilometers(listing.kilometers)}</div>
+                </div>
+              )}
+              {listing.condition && (
+                <div className="bg-muted/50 rounded-md p-2">
+                  <div className="text-xs text-muted-foreground">الحالة</div>
+                  <div className="font-cairo">
+                    {listing.condition === "new" ? "جديد" : "مستعمل"}
+                  </div>
+                </div>
+              )}
+              <div className="bg-muted/50 rounded-md p-2">
+                <div className="text-xs text-muted-foreground">المشاهدات</div>
+                <div className="font-cairo tabular-nums">{formatNumber(listing.views)}</div>
+              </div>
+            </div>
+
+            {/* Seller */}
+            <Card className="p-3">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarFallback className="bg-primary text-primary-foreground font-cairo">
+                    {listing.user.username.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <span className="font-cairo font-bold truncate">{listing.user.username}</span>
+                    {listing.user.isVerified && (
+                      <Verified className="h-4 w-4 text-primary fill-primary/20" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                    <span>{listing.user.rating}</span>
+                    <span>•</span>
+                    <Clock className="h-3 w-3" />
+                    <span>{formatArabicDate(new Date(listing.createdAt))}</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Contact buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={handleCall} className="h-12 text-base">
+                <Phone className="h-5 w-5 ml-2" />
+                اتصال
+              </Button>
+              <Button
+                onClick={handleWhatsApp}
+                variant="secondary"
+                className="h-12 text-base bg-green-600 hover:bg-green-700 text-white"
+              >
+                <MessageCircle className="h-5 w-5 ml-2" />
+                واتساب
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div className="px-4 pb-4">
+          <h4 className="font-cairo font-bold text-base mb-2">الوصف</h4>
+          <p className="text-sm leading-relaxed whitespace-pre-line text-foreground/90">
+            {listing.description}
+          </p>
+        </div>
+
+        <Separator />
+
+        {/* Comments */}
+        <div className="px-4 py-4">
+          <h4 className="font-cairo font-bold text-base mb-3">
+            التعليقات ({safeComments.length})
+          </h4>
+
+          {/* Add comment */}
+          <Card className="p-3 mb-4 bg-muted/30">
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  placeholder="الاسم"
+                  value={commentName}
+                  onChange={(e) => setCommentName(e.target.value)}
+                  className="h-9"
+                />
+                <Input
+                  placeholder="الجوال (اختياري)"
+                  value={commentPhone}
+                  onChange={(e) => setCommentPhone(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <Textarea
+                placeholder="اكتب تعليقك..."
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                rows={2}
+                className="resize-none"
+              />
+              <Button onClick={handleSubmitComment} size="sm" className="w-full sm:w-auto">
+                نشر التعليق
+              </Button>
+            </div>
+          </Card>
+
+          {/* Comments list */}
+          <div className="space-y-3">
+            {safeComments.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                لا توجد تعليقات بعد. كن أول من يعلّق!
+              </p>
+            ) : (
+              safeComments.map((comment) => (
+                <div key={comment.id} className="flex gap-2">
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarFallback className="bg-secondary text-secondary-foreground text-xs font-cairo">
+                      {comment.username.slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="bg-muted/50 rounded-lg p-2.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-cairo font-bold text-sm">{comment.username}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatArabicDate(new Date(comment.createdAt))}
+                        </span>
+                      </div>
+                      <p className="text-sm">{comment.content}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ===== ADD LISTING DIALOG =====
+function AddListingDialog({
+  categories,
+  onClose,
+  onAdded,
+}: {
+  categories: Category[];
+  onClose: () => void;
+  onAdded: () => void;
+}) {
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    price: "",
+    city: "الرياض",
+    district: "",
+    categoryId: "",
+    year: "",
+    kilometers: "",
+    condition: "used",
+    phone: "",
+    whatsapp: "",
+    username: "",
+    imageUrl: "",
+  });
+  const [images, setImages] = useState<string[]>([]);
+
+  const handleAddImage = () => {
+    if (form.imageUrl.trim()) {
+      setImages([...images, form.imageUrl.trim()]);
+      setForm({ ...form, imageUrl: "" });
+    }
+  };
+
+  const handleRemoveImage = (idx: number) => {
+    setImages(images.filter((_, i) => i !== idx));
+  };
+
+  const handleSubmit = async () => {
+    if (!form.title.trim() || !form.description.trim() || !form.price || !form.categoryId || !form.phone) {
+      toast({
+        title: "بيانات ناقصة",
+        description: "الرجاء ملء جميع الحقول المطلوبة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/listings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          images,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "فشل النشر");
+      }
+
+      toast({
+        title: "تم نشر إعلانك بنجاح! 🎉",
+        description: "سوف يظهر إعلانك مباشرة في النتائج",
+      });
+      onAdded();
+    } catch (e) {
+      toast({
+        title: "خطأ في النشر",
+        description: e instanceof Error ? e.message : "حاول مرة أخرى",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Find subcategories for selected parent
+  const selectedParent = categories.find((c) => c.id === form.categoryId);
+  const allCategories = useMemo(() => {
+    const result: { id: string; name: string; slug: string }[] = [];
+    for (const cat of categories) {
+      result.push({ id: cat.id, name: cat.name, slug: cat.slug });
+      for (const child of cat.children) {
+        result.push({ id: child.id, name: `${cat.name} - ${child.name}`, slug: child.slug });
+      }
+    }
+    return result;
+  }, [categories]);
+
+  return (
+    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle className="text-right font-cairo text-xl flex items-center gap-2">
+          <Plus className="h-5 w-5 text-primary" />
+          أضف إعلانك المجاني
+        </DialogTitle>
+      </DialogHeader>
+
+      <div className="space-y-4 py-4">
+        {/* Title */}
+        <div>
+          <Label className="mb-1.5 block">عنوان الإعلان *</Label>
+          <Input
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            placeholder="مثال: تويوتا كامري 2022 فل كامل"
+            maxLength={100}
+          />
+        </div>
+
+        {/* Category */}
+        <div>
+          <Label className="mb-1.5 block">القسم *</Label>
+          <Select
+            value={form.categoryId}
+            onValueChange={(v) => setForm({ ...form, categoryId: v })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="اختر القسم" />
+            </SelectTrigger>
+            <SelectContent>
+              {allCategories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedParent?.slug === "cars" && (
+            <p className="text-xs text-muted-foreground mt-1">سيتم عرض حقول السيارات عند اختيار قسم سيارات</p>
+          )}
+        </div>
+
+        {/* Description */}
+        <div>
+          <Label className="mb-1.5 block">الوصف *</Label>
+          <Textarea
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="اكتب وصفاً تفصيلياً لمعروضك..."
+            rows={4}
+            maxLength={2000}
+          />
+        </div>
+
+        {/* Price */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="mb-1.5 block">السعر (ريال) *</Label>
+            <Input
+              type="number"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <Label className="mb-1.5 block">الحالة</Label>
+            <Select
+              value={form.condition}
+              onValueChange={(v) => setForm({ ...form, condition: v })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="used">مستعمل</SelectItem>
+                <SelectItem value="new">جديد</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Year & KM - shown for cars */}
+        {(selectedParent?.slug === "cars" || categories.some(c => c.children.some(ch => ch.id === form.categoryId && c.slug === "cars"))) && (
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="mb-1.5 block">سنة الصنع</Label>
+              <Input
+                type="number"
+                value={form.year}
+                onChange={(e) => setForm({ ...form, year: e.target.value })}
+                placeholder="2022"
+              />
+            </div>
+            <div>
+              <Label className="mb-1.5 block">الممشى (كم)</Label>
+              <Input
+                type="number"
+                value={form.kilometers}
+                onChange={(e) => setForm({ ...form, kilometers: e.target.value })}
+                placeholder="45000"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Location */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="mb-1.5 block">المدينة *</Label>
+            <Select
+              value={form.city}
+              onValueChange={(v) => setForm({ ...form, city: v })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SAUDI_CITIES.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="mb-1.5 block">الحي</Label>
+            <Input
+              value={form.district}
+              onChange={(e) => setForm({ ...form, district: e.target.value })}
+              placeholder="النرجس"
+            />
+          </div>
+        </div>
+
+        {/* Contact */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="mb-1.5 block">الجوال *</Label>
+            <Input
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="05xxxxxxxx"
+              dir="ltr"
+            />
+          </div>
+          <div>
+            <Label className="mb-1.5 block">واتساب</Label>
+            <Input
+              value={form.whatsapp}
+              onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+              placeholder="05xxxxxxxx"
+              dir="ltr"
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label className="mb-1.5 block">اسمك</Label>
+          <Input
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            placeholder="أبو محمد"
+          />
+        </div>
+
+        {/* Images */}
+        <div>
+          <Label className="mb-1.5 block">الصور</Label>
+          <div className="flex gap-2">
+            <Input
+              value={form.imageUrl}
+              onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+              placeholder="رابط صورة (URL)"
+              dir="ltr"
+            />
+            <Button type="button" variant="secondary" onClick={handleAddImage}>
+              <Plus className="h-4 w-4 ml-1" />
+              إضافة
+            </Button>
+          </div>
+          {images.length > 0 && (
+            <div className="grid grid-cols-4 gap-2 mt-2">
+              {images.map((img, i) => (
+                <div key={i} className="relative aspect-square rounded-md overflow-hidden group">
+                  { }
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => handleRemoveImage(i)}
+                    className="absolute top-1 left-1 bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="حذف"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground mt-1">
+            أضف روابط مباشرة لصور معروضتك من الإنترنت
+          </p>
+        </div>
+
+        {/* Submit */}
+        <div className="flex gap-2 pt-2">
+          <Button onClick={handleSubmit} disabled={submitting} className="flex-1 h-12 text-base">
+            {submitting ? "جارٍ النشر..." : "نشر الإعلان"}
+          </Button>
+          <DialogClose asChild>
+            <Button variant="outline" onClick={onClose}>إلغاء</Button>
+          </DialogClose>
+        </div>
+      </div>
+    </DialogContent>
+  );
+}
