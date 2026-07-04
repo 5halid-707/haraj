@@ -5,12 +5,17 @@
   "scripts": {
     "dev": "next dev -p 3000 2>&1 | tee dev.log",
     "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "build:prod": "prisma generate && next build",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
     "db:push": "prisma db push",
+    "db:push:prod": "DATABASE_PROVIDER=postgresql prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "db:seed": "bunx tsx scripts/seed.ts",
+    "deploy": "vercel --prod",
+    "switch-to-postgres": "node scripts/switch-to-postgres.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

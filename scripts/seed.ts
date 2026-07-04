@@ -28,7 +28,7 @@ async function main() {
       siteName: "حراج",
       adminPhone: "0575015019",
       adminWhatsApp: "0575015019",
-      adminEmail: "abosattam@haraj.sa",
+      adminEmail: "grouthhacker@gmail.com",
       adminCity: "جدة",
       adminBankName: "البنك الأهلي السعودي",
       adminAccountName: "أبو سطام",
@@ -122,7 +122,7 @@ async function main() {
   // All users have password: 123456
   const defaultPassword = await bcrypt.hash("123456", 10);
   const users = [
-    { username: "أبو سطام", phone: "0575015019", email: "abosattam@haraj.sa", city: "جدة", isVerified: true, isAdmin: true, rating: 5.0, affiliateCode: "SATTAM100" },
+    { username: "أبو سطام", phone: "0575015019", email: "grouthhacker@gmail.com", city: "جدة", isVerified: true, isAdmin: true, rating: 5.0, affiliateCode: "SATTAM100" },
     { username: "أبو عبدالله", phone: "0557654321", email: "abuabdullah@haraj.sa", city: "جدة", isVerified: true, rating: 4.9, affiliateCode: "ABDULLAH1" },
     { username: "أبو خالد", phone: "0561112233", email: "abukhaled@haraj.sa", city: "الدمام", isVerified: false, rating: 4.3, affiliateCode: "KHALED200" },
     { username: "أبو سعد", phone: "0574455667", email: "abusaad@haraj.sa", city: "مكة", isVerified: true, rating: 4.7, affiliateCode: "SAAD300" },
