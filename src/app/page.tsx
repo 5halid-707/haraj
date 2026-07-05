@@ -283,7 +283,7 @@ export default function HarajHomePage() {
     }
   }, [isAuthenticated]);
 
-  // Featured listings (separate section)
+  // Featured listings shown with badge in main list (no separate section)
   const featuredListings = useMemo(() => {
     return listings.filter((l) => l.isFeatured).slice(0, 6);
   }, [listings]);
@@ -870,35 +870,7 @@ export default function HarajHomePage() {
               </div>
             </div>
 
-            {/* Featured section */}
-            {!showFeaturedOnly && selectedCategory === "all" && !searchQuery && featuredListings.length > 0 && (
-              <section className="mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <Award className="h-5 w-5 text-primary" />
-                  <h2 className="font-cairo font-bold text-lg">إعلانات مميزة</h2>
-                  <Badge variant="secondary" className="bg-accent text-accent-foreground">
-                    <TrendingUp className="h-3 w-3 ml-1" />
-                    مميز
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                  {featuredListings.map((listing) => (
-                    <ListingCard
-                      key={listing.id}
-                      listing={listing}
-                      onOpen={() => setSelectedListing(listing)}
-                      isFavorite={favorites.has(listing.id)}
-                      onToggleFavorite={() => toggleFavorite(listing.id)}
-                      onShare={() => shareListing(listing)}
-                      compact
-                    />
-                  ))}
-                </div>
-                <Separator className="mt-6" />
-              </section>
-            )}
-
-            {/* All listings */}
+            {/* All listings — unified list, no separate featured section */}
             <section>
               <div className="flex items-center gap-2 mb-3">
                 <h2 className="font-cairo font-bold text-lg">
