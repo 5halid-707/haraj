@@ -358,7 +358,7 @@ export function PaymentDialog({
 
             {/* Demo notice */}
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-800">
-              <strong>وضع تجريبي:</strong> هذا نظام دفع تجريبي. لن يتم خصم أي مبلغ فعلي من بطاقتك.
+              <strong>دفع آمن:</strong> معاملاتك محمية بتشفير 256-bit SSL عبر PayPal ومدى.
             </div>
 
             {/* Pay button */}
