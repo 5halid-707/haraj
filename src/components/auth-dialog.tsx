@@ -85,7 +85,7 @@ export function AuthDialog({
       const result = await signIn("credentials", {
         identifier: loginIdentifier.trim(),
         password: loginPassword,
-        redirect: false,
+        redirect: true,
         callbackUrl: "/",
       });
 
