@@ -1,0 +1,427 @@
+     1→Skip to content
+     2→Logs
+     3→
+     4→
+     5→Search logs...
+     6→00:12:00
+     7→00:42:00
+     8→Time
+     9→Status
+    10→Host
+    11→Request
+    12→Messages
+    13→TimeMethodStatusHostRequestMessage
+    14→Jul 06 00:37:23.98
+    15→GET
+    16→200
+    17→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    18→/api/listings
+    19→11
+    20→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+    21→Jul 06 00:37:23.84
+    22→POST
+    23→500
+    24→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    25→/api/auth/_log
+    26→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+    27→Jul 06 00:37:23.78
+    28→GET
+    29→200
+    30→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    31→/api/listings
+    32→16
+    33→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+    34→Jul 06 00:37:23.74
+    35→GET
+    36→200
+    37→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    38→/api/listings
+    39→16
+    40→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+    41→Jul 06 00:37:23.74
+    42→GET
+    43→500
+    44→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    45→/api/auth/session
+    46→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+    47→Jul 06 00:37:23.73
+    48→GET
+    49→200
+    50→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    51→/api/categories
+    52→6
+    53→prisma:query SELECT "public"."Category"."id", "public"."Category"."name", "public"."Category"."slug", "public"."Category"."icon", "public"."Category"."parentId", "public"."Category"."createdAt" FROM "public"."Category" WHERE "public"."Category"."parentId" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) OFFSET $21
+    54→Jul 06 00:37:23.64
+    55→POST
+    56→500
+    57→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    58→/api/auth/_log
+    59→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+    60→Jul 06 00:37:23.59
+    61→GET
+    62→304
+    63→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    64→/
+    65→Jul 06 00:37:23.57
+    66→GET
+    67→304
+    68→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    69→/
+    70→Jul 06 00:37:23.51
+    71→GET
+    72→500
+    73→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    74→/api/auth/session
+    75→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+    76→Jul 06 00:37:23.51
+    77→GET
+    78→200
+    79→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    80→/api/categories
+    81→4
+    82→prisma:query SELECT "public"."Category"."id", "public"."Category"."name", "public"."Category"."slug", "public"."Category"."icon", "public"."Category"."parentId", "public"."Category"."createdAt" FROM "public"."Category" WHERE "public"."Category"."parentId" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) OFFSET $21
+    83→Jul 06 00:37:23.51
+    84→GET
+    85→200
+    86→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    87→/api/listings
+    88→8
+    89→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+    90→Jul 06 00:37:22.64
+    91→GET
+    92→200
+    93→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    94→/
+    95→Jul 06 00:37:22.57
+    96→GET
+    97→200
+    98→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+    99→/
+   100→Jul 06 00:37:22.49
+   101→GET
+   102→200
+   103→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+   104→/
+   105→Jul 06 00:37:22.25
+   106→GET
+   107→200
+   108→haraj-v2-7kmidssu5-5halid-707s-projects.vercel.app
+   109→/
+   110→Jul 06 00:37:07.95
+   111→GET
+   112→200
+   113→haraj-v2.vercel.app
+   114→/api/listings
+   115→4
+   116→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   117→Jul 06 00:37:03.53
+   118→POST
+   119→500
+   120→haraj-v2.vercel.app
+   121→/api/auth/_log
+   122→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   123→Jul 06 00:37:03.24
+   124→POST
+   125→500
+   126→haraj-v2.vercel.app
+   127→/api/auth/_log
+   128→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   129→Jul 06 00:37:03.20
+   130→GET
+   131→500
+   132→haraj-v2.vercel.app
+   133→/api/auth/session
+   134→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   135→Jul 06 00:37:02.87
+   136→GET
+   137→500
+   138→haraj-v2.vercel.app
+   139→/api/auth/session
+   140→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   141→Jul 06 00:37:02.87
+   142→POST
+   143→500
+   144→haraj-v2.vercel.app
+   145→/api/auth/_log
+   146→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   147→Jul 06 00:37:02.54
+   148→GET
+   149→500
+   150→haraj-v2.vercel.app
+   151→/api/auth/session
+   152→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   153→Jul 06 00:37:02.54
+   154→GET
+   155→200
+   156→haraj-v2.vercel.app
+   157→/api/listings
+   158→4
+   159→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   160→Jul 06 00:37:02.54
+   161→GET
+   162→200
+   163→haraj-v2.vercel.app
+   164→/api/categories
+   165→3
+   166→prisma:query SELECT "public"."Category"."id", "public"."Category"."name", "public"."Category"."slug", "public"."Category"."icon", "public"."Category"."parentId", "public"."Category"."createdAt" FROM "public"."Category" WHERE "public"."Category"."parentId" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) OFFSET $21
+   167→Jul 06 00:37:01.61
+   168→GET
+   169→304
+   170→haraj-v2.vercel.app
+   171→/
+   172→Jul 06 00:37:00.55
+   173→POST
+   174→500
+   175→haraj-v2.vercel.app
+   176→/api/auth/_log
+   177→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   178→Jul 06 00:37:00.24
+   179→POST
+   180→500
+   181→haraj-v2.vercel.app
+   182→/api/auth/_log
+   183→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   184→Jul 06 00:37:00.23
+   185→GET
+   186→500
+   187→haraj-v2.vercel.app
+   188→/api/auth/session
+   189→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   190→Jul 06 00:36:59.93
+   191→POST
+   192→500
+   193→haraj-v2.vercel.app
+   194→/api/auth/_log
+   195→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   196→Jul 06 00:36:59.92
+   197→GET
+   198→500
+   199→haraj-v2.vercel.app
+   200→/api/auth/session
+   201→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   202→Jul 06 00:36:59.55
+   203→GET
+   204→500
+   205→haraj-v2.vercel.app
+   206→/api/auth/session
+   207→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   208→Jul 06 00:36:56.00
+   209→POST
+   210→500
+   211→haraj-v2.vercel.app
+   212→/api/auth/_log
+   213→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   214→Jul 06 00:36:55.72
+   215→POST
+   216→500
+   217→haraj-v2.vercel.app
+   218→/api/auth/_log
+   219→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   220→Jul 06 00:36:55.69
+   221→GET
+   222→500
+   223→haraj-v2.vercel.app
+   224→/api/auth/session
+   225→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   226→Jul 06 00:36:55.36
+   227→POST
+   228→500
+   229→haraj-v2.vercel.app
+   230→/api/auth/_log
+   231→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   232→Jul 06 00:36:55.32
+   233→GET
+   234→500
+   235→haraj-v2.vercel.app
+   236→/api/auth/session
+   237→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   238→Jul 06 00:36:55.03
+   239→GET
+   240→500
+   241→haraj-v2.vercel.app
+   242→/api/auth/session
+   243→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   244→Jul 06 00:36:10.17
+   245→GET
+   246→200
+   247→haraj-v2.vercel.app
+   248→/api/listings
+   249→5
+   250→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   251→Jul 06 00:36:08.15
+   252→POST
+   253→500
+   254→haraj-v2.vercel.app
+   255→/api/auth/_log
+   256→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   257→Jul 06 00:36:07.87
+   258→GET
+   259→500
+   260→haraj-v2.vercel.app
+   261→/api/auth/session
+   262→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   263→Jul 06 00:36:07.86
+   264→POST
+   265→500
+   266→haraj-v2.vercel.app
+   267→/api/auth/_log
+   268→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   269→Jul 06 00:36:07.51
+   270→GET
+   271→500
+   272→haraj-v2.vercel.app
+   273→/api/auth/session
+   274→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   275→Jul 06 00:36:07.51
+   276→GET
+   277→200
+   278→haraj-v2.vercel.app
+   279→/api/listings
+   280→4
+   281→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   282→Jul 06 00:36:07.51
+   283→GET
+   284→200
+   285→haraj-v2.vercel.app
+   286→/api/categories
+   287→2
+   288→prisma:query SELECT "public"."Category"."id", "public"."Category"."name", "public"."Category"."slug", "public"."Category"."icon", "public"."Category"."parentId", "public"."Category"."createdAt" FROM "public"."Category" WHERE "public"."Category"."parentId" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) OFFSET $21
+   289→Jul 06 00:36:06.70
+   290→GET
+   291→304
+   292→haraj-v2.vercel.app
+   293→/
+   294→Jul 06 00:36:06.67
+   295→POST
+   296→500
+   297→haraj-v2.vercel.app
+   298→/api/auth/_log
+   299→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   300→Jul 06 00:36:06.26
+   301→GET
+   302→500
+   303→haraj-v2.vercel.app
+   304→/api/auth/providers
+   305→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   306→Jul 06 00:35:58.38
+   307→GET
+   308→200
+   309→haraj-v2.vercel.app
+   310→/api/listings
+   311→4
+   312→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   313→Jul 06 00:35:53.50
+   314→POST
+   315→500
+   316→haraj-v2.vercel.app
+   317→/api/auth/_log
+   318→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   319→Jul 06 00:35:53.18
+   320→GET
+   321→500
+   322→haraj-v2.vercel.app
+   323→/api/auth/session
+   324→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   325→Jul 06 00:35:53.17
+   326→POST
+   327→500
+   328→haraj-v2.vercel.app
+   329→/api/auth/_log
+   330→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   331→Jul 06 00:35:51.83
+   332→GET
+   333→500
+   334→haraj-v2.vercel.app
+   335→/api/auth/session
+   336→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   337→Jul 06 00:35:51.83
+   338→GET
+   339→200
+   340→haraj-v2.vercel.app
+   341→/api/listings
+   342→4
+   343→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   344→Jul 06 00:35:51.82
+   345→GET
+   346→200
+   347→haraj-v2.vercel.app
+   348→/api/categories
+   349→2
+   350→prisma:query SELECT "public"."Category"."id", "public"."Category"."name", "public"."Category"."slug", "public"."Category"."icon", "public"."Category"."parentId", "public"."Category"."createdAt" FROM "public"."Category" WHERE "public"."Category"."parentId" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) OFFSET $21
+   351→Jul 06 00:35:50.83
+   352→GET
+   353→200
+   354→haraj-v2.vercel.app
+   355→/
+   356→Jul 06 00:35:50.39
+   357→POST
+   358→500
+   359→haraj-v2.vercel.app
+   360→/api/auth/_log
+   361→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   362→Jul 06 00:35:50.38
+   363→GET
+   364→302
+   365→haraj-v2.vercel.app
+   366→/api/auth/error
+   367→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   368→Jul 06 00:35:49.74
+   369→GET
+   370→500
+   371→haraj-v2.vercel.app
+   372→/api/auth/providers
+   373→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   374→Jul 06 00:34:58.78
+   375→GET
+   376→200
+   377→haraj-v2.vercel.app
+   378→/api/listings
+   379→4
+   380→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   381→Jul 06 00:34:51.38
+   382→POST
+   383→500
+   384→haraj-v2.vercel.app
+   385→/api/auth/_log
+   386→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   387→Jul 06 00:34:51.10
+   388→GET
+   389→500
+   390→haraj-v2.vercel.app
+   391→/api/auth/session
+   392→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   393→Jul 06 00:34:51.07
+   394→POST
+   395→500
+   396→haraj-v2.vercel.app
+   397→/api/auth/_log
+   398→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   399→Jul 06 00:34:50.37
+   400→GET
+   401→500
+   402→haraj-v2.vercel.app
+   403→/api/auth/session
+   404→[next-auth][error][NO_SECRET] https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production. at r.assertConfig (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:11891) at _ (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:17760) at async a (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:24099) at async e.length.t (.next/server/chunks/[root-of-the-server]__edbe9a4f._.js:34:25542) at async d (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:4750) at async l (.next/server/chunks/[root-of-the-server]__a4a80164._.js:1:5791) { code: 'NO_SECRET' }
+   405→Jul 06 00:34:50.36
+   406→GET
+   407→200
+   408→haraj-v2.vercel.app
+   409→/api/categories
+   410→2
+   411→prisma:query SELECT "public"."Category"."id", "public"."Category"."name", "public"."Category"."slug", "public"."Category"."icon", "public"."Category"."parentId", "public"."Category"."createdAt" FROM "public"."Category" WHERE "public"."Category"."parentId" IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) OFFSET $21
+   412→Jul 06 00:34:50.36
+   413→GET
+   414→200
+   415→haraj-v2.vercel.app
+   416→/api/listings
+   417→4
+   418→prisma:query SELECT "public"."User"."id", "public"."User"."username", "public"."User"."email", "public"."User"."phone", "public"."User"."password", "public"."User"."city", "public"."User"."avatar", "public"."User"."isVerified", "public"."User"."isAdmin", "public"."User"."isBanned", "public"."User"."banReason", "public"."User"."bannedAt", "public"."User"."bannedById", "public"."User"."rating", "public"."User"."createdAt", "public"."User"."updatedAt", "public"."User"."affiliateCode", "public"."User"."referredById" FROM "public"."User" WHERE "public"."User"."id" IN ($1,$2,$3,$4,$5,$6,$7) OFFSET $8
+   419→Jul 06 00:34:48.27
+   420→GET
+   421→200
+   422→haraj-v2.vercel.app
+   423→/
+   424→No more logs to show within selected timeline
+   425→
+   426→haraj-v2 – Logs – Vercel
+   427→00:42:00
