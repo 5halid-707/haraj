@@ -761,7 +761,7 @@ function RideView({ user, lang }: { user: User | null; lang: Lang }) {
             </Card>
           </div>
         </div>
-        {chatOpen && activeTrip.driverId && <ChatDialog open={chatOpen} onOpenChange={setChatOpen} tripId={activeTrip.id} currentUserId={user?.id || ""} otherUserId={activeTrip.driverId} otherName={activeTrip.driver?.name || "Driver"} lang={lang} />}
+        {chatOpen && activeTrip.driverId && <ChatDialog open={chatOpen} onOpenChange={setChatOpen} tripId={activeTrip.id} currentUserId={user?.id || ""} otherUserId={activeTrip.driverId} otherName={activeTrip.driver?.name || "Driver"} lang={lang} otherAvatar={activeTrip.driver?.user?.avatar || null} />}
       </div>
     );
   }
@@ -811,23 +811,48 @@ function RideView({ user, lang }: { user: User | null; lang: Lang }) {
 }
 
 // ===== CHAT DIALOG =====
-function ChatDialog({ open, onOpenChange, tripId, currentUserId, otherUserId, otherName, lang }: { open: boolean; onOpenChange: (o: boolean) => void; tripId: string; currentUserId: string; otherUserId: string; otherName: string; lang: Lang }) {
+function ChatDialog({ open, onOpenChange, tripId, currentUserId, otherUserId, otherName, lang, otherAvatar }: { open: boolean; onOpenChange: (o: boolean) => void; tripId: string; currentUserId: string; otherUserId: string; otherName: string; lang: Lang; otherAvatar?: string | null }) {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [myAvatar, setMyAvatar] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevMsgCount = useRef(0);
+  const { toast } = useToast();
 
+  // Fetch messages + play sound on new
   useEffect(() => {
     if (!open || !tripId) return;
-    const fetchMessages = async () => { try { const res = await fetch(`/api/chat?tripId=${tripId}&userId=${currentUserId}`); const data = await res.json(); if (Array.isArray(data)) { setMessages(prev => { if (prev.length !== data.length) return data; return prev; }); } } catch {} };
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`/api/chat?tripId=${tripId}&userId=${currentUserId}`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setMessages(prev => {
+            if (data.length > prev.length) {
+              // New messages arrived - play sound
+              if (prev.length > 0) safePlaySound(playMessageSound);
+            }
+            return data;
+          });
+        }
+      } catch {}
+    };
     fetchMessages();
     const interval = setInterval(fetchMessages, 2000);
     return () => clearInterval(interval);
   }, [open, tripId, currentUserId]);
 
+  // Fetch my avatar
+  useEffect(() => {
+    if (!currentUserId) return;
+    fetch(`/api/users/me?userId=${currentUserId}`)
+      .then(r => r.json())
+      .then(d => { if (d.avatar) setMyAvatar(d.avatar); })
+      .catch(() => {});
+  }, [currentUserId]);
+
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
-  useEffect(() => { if (messages.length > prevMsgCount.current && prevMsgCount.current > 0) safePlaySound(playMessageSound); prevMsgCount.current = messages.length; }, [messages.length]);
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -836,23 +861,53 @@ function ChatDialog({ open, onOpenChange, tripId, currentUserId, otherUserId, ot
       const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tripId, senderId: currentUserId, receiverId: otherUserId, message: newMessage, messageType: "text" }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setMessages(prev => [...prev, data]); setNewMessage("");
-    } catch {} finally { setSending(false); }
+      setMessages(prev => [...prev, data]);
+      setNewMessage("");
+      // Play sound when I send a message too
+      safePlaySound(playMessageSound);
+    } catch (e) {
+      toast({ title: lang === "ar" ? "فشل الإرسال" : "Send failed", variant: "destructive" });
+    } finally { setSending(false); }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md h-[600px] flex flex-col">
-        <DialogHeader><DialogTitle>{lang === "ar" ? "محادثة مع" : "Chat with"} {otherName}</DialogTitle></DialogHeader>
-        <div className="flex-1 overflow-y-auto space-y-3 p-2">
-          {messages.map((msg) => (
-            <div key={msg.id} className={`flex ${msg.senderId === currentUserId ? "justify-start" : "justify-end"}`}>
-              <div className={`max-w-[75%] p-3 rounded-2xl ${msg.senderId === currentUserId ? "bg-black text-white rounded-bl-sm" : "bg-zinc-100 text-black rounded-br-sm"}`}>
-                <p className="text-sm">{msg.message}</p>
-                <div className={`text-[10px] mt-1 ${msg.senderId === currentUserId ? "text-zinc-400" : "text-zinc-500"}`}>{new Date(msg.createdAt).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}{msg.senderId === currentUserId && (msg.isRead ? " ✓✓" : " ✓")}</div>
-              </div>
+        {/* Header with profile photo */}
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <Avatar className="w-12 h-12">
+              {otherAvatar ? <img src={otherAvatar} alt={otherName} className="w-full h-full rounded-full object-cover" /> : <AvatarFallback className="bg-zinc-700 text-white">{(otherName || "?").charAt(0)}</AvatarFallback>}
+            </Avatar>
+            <div>
+              <DialogTitle className="text-lg">{otherName}</DialogTitle>
+              <p className="text-xs text-green-600 flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full"></span>{lang === "ar" ? "متصل الآن" : "Online"}</p>
             </div>
-          ))}
+          </div>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-y-auto space-y-3 p-2">
+          {messages.map((msg) => {
+            const isMe = msg.senderId === currentUserId;
+            return (
+              <div key={msg.id} className={`flex items-end gap-2 ${isMe ? "justify-start" : "justify-end"}`}>
+                {!isMe && (
+                  <Avatar className="w-8 h-8 shrink-0">
+                    {otherAvatar ? <img src={otherAvatar} alt="" className="w-full h-full rounded-full object-cover" /> : <AvatarFallback className="bg-zinc-700 text-white text-xs">{(otherName || "?").charAt(0)}</AvatarFallback>}
+                  </Avatar>
+                )}
+                <div className={`max-w-[70%] p-3 rounded-2xl ${isMe ? "bg-black text-white rounded-bl-sm" : "bg-zinc-100 text-black rounded-br-sm"}`}>
+                  <p className="text-sm">{msg.message}</p>
+                  <div className={`text-[10px] mt-1 ${isMe ? "text-zinc-400" : "text-zinc-500"}`}>{new Date(msg.createdAt).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}{isMe && (msg.isRead ? " ✓✓" : " ✓")}</div>
+                </div>
+                {isMe && (
+                  <Avatar className="w-8 h-8 shrink-0">
+                    {myAvatar ? <img src={myAvatar} alt="" className="w-full h-full rounded-full object-cover" /> : <AvatarFallback className="bg-black text-white text-xs">{"?"}</AvatarFallback>}
+                  </Avatar>
+                )}
+              </div>
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
         <div className="flex gap-2 p-2 border-t border-zinc-200">
@@ -1119,7 +1174,7 @@ function DriverView({ user, lang }: { user: User | null; lang: Lang }) {
 
       {!online && !activeTrip && (<Card className="p-12 border-zinc-200 text-center"><div className="text-6xl mb-4">😴</div><h3 className="text-xl font-bold text-black mb-2">{t("driver.offlineMsg", lang)}</h3><p className="text-zinc-500 mb-6">{t("driver.offlineDescMsg", lang)}</p><Button onClick={() => toggleOnline(true)} className="bg-black hover:bg-zinc-800 h-12 px-8">{t("driver.startWork", lang)}</Button></Card>)}
 
-      {chatOpen && activeTrip && <ChatDialog open={chatOpen} onOpenChange={setChatOpen} tripId={activeTrip.id} currentUserId={user?.id || ""} otherUserId={activeTrip.userId} otherName={activeTrip.user?.name || "Rider"} lang={lang} />}
+      {chatOpen && activeTrip && <ChatDialog open={chatOpen} onOpenChange={setChatOpen} tripId={activeTrip.id} currentUserId={user?.id || ""} otherUserId={activeTrip.userId} otherName={activeTrip.user?.name || "Rider"} lang={lang} otherAvatar={activeTrip.user?.avatar || null} />}
 
       <Dialog open={paymentDialog.open} onOpenChange={(o) => setPaymentDialog({ ...paymentDialog, open: o })}>
         <DialogContent>
@@ -1248,7 +1303,7 @@ function ProfileView({ user, lang, onLogout }: { user: User | null; lang: Lang; 
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
-      <Card className="p-6 mb-6 border-zinc-200"><div className="flex items-center gap-4"><Avatar className="w-20 h-20"><AvatarFallback className="text-2xl bg-black text-white">{user.name.charAt(0)}</AvatarFallback></Avatar><div className="flex-1"><h1 className="text-2xl font-bold text-black">{user.name}</h1><div className="flex items-center gap-3 mt-1"><span className="flex items-center gap-1">⭐ {user.rating}</span>{user.isAdmin && <Badge className="bg-black">{t("profile.adminBadge", lang)}</Badge>}{user.isVerified && <Badge variant="secondary">{t("profile.verified", lang)}</Badge>}</div><p className="text-sm text-zinc-500 mt-1">{user.phone}</p></div></div></Card>
+      <Card className="p-6 mb-6 border-zinc-200"><div className="flex items-center gap-4"><Avatar className="w-20 h-20">{(user as any)?.avatar ? <img src={(user as any).avatar} alt={user.name} className="w-full h-full rounded-full object-cover" /> : <AvatarFallback className="text-2xl bg-black text-white">{(user.name || "?").charAt(0)}</AvatarFallback>}</Avatar><div className="flex-1"><h1 className="text-2xl font-bold text-black">{user.name}</h1><div className="flex items-center gap-3 mt-1"><span className="flex items-center gap-1">⭐ {user.rating}</span>{user.isAdmin && <Badge className="bg-black">{t("profile.adminBadge", lang)}</Badge>}{user.isVerified && <Badge variant="secondary">{t("profile.verified", lang)}</Badge>}</div><p className="text-sm text-zinc-500 mt-1">{user.phone}</p></div></div></Card>
       <div className="flex gap-2 mb-6">{[{ id: "info", l: t("profile.info", lang) }, { id: "wallet", l: t("profile.wallet", lang) }, { id: "settings", l: t("profile.settings", lang) }].map((tb) => (<Button key={tb.id} variant={tab === tb.id ? "default" : "outline"} onClick={() => setTab(tb.id as typeof tab)} className={tab === tb.id ? "bg-black hover:bg-zinc-800" : ""}>{tb.l}</Button>))}
       </div>
       {tab === "info" && (<Card className="p-6 border-zinc-200"><h3 className="font-bold text-black mb-4">{lang === "ar" ? "المعلومات الشخصية" : "Personal Info"}</h3><div className="space-y-3">{[{ l: t("profile.fullName", lang), v: user.name }, { l: t("profile.email", lang), v: user.email }, { l: t("profile.phone", lang), v: user.phone }, { l: t("profile.city", lang), v: user.city || "-" }, { l: t("profile.region", lang), v: user.region || "-" }].map((item, i) => (<div key={i} className="flex justify-between py-3 border-b border-zinc-100"><span className="text-zinc-500">{item.l}</span><span className="font-medium text-black">{item.v}</span></div>))}</div></Card>)}
