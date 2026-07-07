@@ -1,72 +1,63 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 
+// GET /api/admin/stats
+// Returns ride-sharing dashboard stats:
+//   totalUsers, totalDrivers, totalTrips, completedTrips, totalRevenue
+//   plus a few extras: pendingDrivers, activeTrips, cancelledTrips, unpaidTrips
 export async function GET() {
-  const admin = await requireAdmin();
-  if (!admin) {
-    return NextResponse.json({ error: "غير مصرح لك" }, { status: 403 });
-  }
-
-  const [
-    totalUsers,
-    totalListings,
-    activeListings,
-    featuredListings,
-    totalComments,
-    pendingTransactions,
-    completedTransactions,
-    totalTransactionsAmount,
-    usersList,
-    recentListings,
-  ] = await Promise.all([
-    db.user.count(),
-    db.listing.count(),
-    db.listing.count({ where: { status: "active" } }),
-    db.listing.count({ where: { isFeatured: true } }),
-    db.comment.count(),
-    db.transaction.count({ where: { status: "pending" } }),
-    db.transaction.count({ where: { status: "completed" } }),
-    db.transaction.aggregate({
-      where: { status: "completed", type: { in: ["payment_in", "deposit"] } },
-      _sum: { amount: true },
-    }),
-    db.user.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: {
-        id: true,
-        username: true,
-        phone: true,
-        city: true,
-        isVerified: true,
-        isAdmin: true,
-        createdAt: true,
-        _count: { select: { listings: true } },
-      },
-    }),
-    db.listing.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: {
-        user: { select: { username: true } },
-        category: { select: { name: true } },
-      },
-    }),
-  ]);
-
-  return NextResponse.json({
-    stats: {
+  try {
+    const [
       totalUsers,
-      totalListings,
-      activeListings,
-      featuredListings,
-      totalComments,
-      pendingTransactions,
-      completedTransactions,
-      totalRevenue: totalTransactionsAmount._sum.amount || 0,
-    },
-    recentUsers: usersList,
-    recentListings,
-  });
+      totalDrivers,
+      pendingDrivers,
+      approvedDrivers,
+      totalTrips,
+      completedTrips,
+      activeTrips,
+      cancelledTrips,
+      unpaidTripsCount,
+      revenueAgg,
+      unpaidAgg,
+    ] = await Promise.all([
+      db.user.count({ where: { isAdmin: false } }),
+      db.driver.count(),
+      db.driver.count({ where: { approvalStatus: "pending" } }),
+      db.driver.count({ where: { isApproved: true } }),
+      db.trip.count(),
+      db.trip.count({ where: { status: "completed" } }),
+      db.trip.count({
+        where: { status: { in: ["pending", "accepted", "driver_arrived", "ongoing"] } },
+      }),
+      db.trip.count({ where: { status: "cancelled" } }),
+      db.trip.count({ where: { unpaidAmount: { gt: 0 } } }),
+      db.trip.aggregate({
+        where: { status: "completed" },
+        _sum: { finalPrice: true },
+      }),
+      db.trip.aggregate({
+        where: { unpaidAmount: { gt: 0 } },
+        _sum: { unpaidAmount: true },
+      }),
+    ]);
+
+    return NextResponse.json({
+      stats: {
+        totalUsers,
+        totalDrivers,
+        pendingDrivers,
+        approvedDrivers,
+        totalTrips,
+        completedTrips,
+        activeTrips,
+        cancelledTrips,
+        unpaidTrips: unpaidTripsCount,
+        totalRevenue: revenueAgg._sum.finalPrice || 0,
+        totalUnpaid: unpaidAgg._sum.unpaidAmount || 0,
+      },
+    });
+  } catch (error) {
+    console.error("GET /api/admin/stats error:", error);
+    return NextResponse.json({ error: "حدث خطأ أثناء جلب الإحصائيات" }, { status: 500 });
+  }
 }

@@ -1,84 +1,170 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 
-export async function GET() {
-  const user = await requireAuth();
-  if (!user) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-  }
+// GET /api/bank-accounts?userId=xxx
+// - Returns all bank/paypal accounts for the user
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
 
-  const accounts = await db.bankAccount.findMany({
-    where: { userId: user.id },
-    orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
-  });
+    if (!userId) {
+      return NextResponse.json({ error: "userId مطلوب" }, { status: 400 });
+    }
 
-  return NextResponse.json({ accounts });
-}
-
-export async function POST(request: NextRequest) {
-  const user = await requireAuth();
-  if (!user) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-  }
-
-  const body = await request.json();
-  const { bankName, accountName, iban, accountNumber, swiftCode, isDefault } = body;
-
-  if (!bankName?.trim() || !accountName?.trim() || !iban?.trim() || !accountNumber?.trim()) {
-    return NextResponse.json(
-      { error: "الرجاء ملء جميع الحقول المطلوبة" },
-      { status: 400 }
-    );
-  }
-
-  // Check IBAN uniqueness
-  const existing = await db.bankAccount.findFirst({ where: { iban: iban.trim() } });
-  if (existing) {
-    return NextResponse.json(
-      { error: "رقم الـ IBAN مسجل مسبقاً" },
-      { status: 409 }
-    );
-  }
-
-  // If new account is default, unset previous defaults
-  if (isDefault) {
-    await db.bankAccount.updateMany({
-      where: { userId: user.id, isDefault: true },
-      data: { isDefault: false },
+    const accounts = await db.bankAccount.findMany({
+      where: { userId },
+      orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
     });
+
+    return NextResponse.json({ accounts });
+  } catch (error) {
+    console.error("GET /api/bank-accounts error:", error);
+    return NextResponse.json({ error: "حدث خطأ أثناء جلب الحسابات" }, { status: 500 });
   }
-
-  const account = await db.bankAccount.create({
-    data: {
-      userId: user.id,
-      bankName: bankName.trim(),
-      accountName: accountName.trim(),
-      iban: iban.trim().toUpperCase(),
-      accountNumber: accountNumber.trim(),
-      swiftCode: swiftCode?.trim() || null,
-      isDefault: !!isDefault,
-    },
-  });
-
-  return NextResponse.json({ account });
 }
 
+// POST /api/bank-accounts
+// Body for bank: { userId, bankName, accountName, iban?, accountNumber?, isDefault? }
+// Body for paypal: { userId, accountType: "paypal", paypalEmail, accountName, isDefault? }
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const {
+      userId,
+      accountType = "bank",
+      bankName,
+      accountName,
+      iban,
+      accountNumber,
+      paypalEmail,
+      isDefault,
+    } = body;
+
+    if (!userId || !accountName?.trim()) {
+      return NextResponse.json(
+        { error: "userId و accountName مطلوبة" },
+        { status: 400 }
+      );
+    }
+
+    const user = await db.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
+    }
+
+    // === PayPal account ===
+    if (accountType === "paypal") {
+      if (!paypalEmail?.trim()) {
+        return NextResponse.json(
+          { error: "paypalEmail مطلوب لحساب PayPal" },
+          { status: 400 }
+        );
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(paypalEmail)) {
+        return NextResponse.json({ error: "بريد PayPal غير صالح" }, { status: 400 });
+      }
+
+      // Replace existing paypal account if any (one paypal per user)
+      await db.bankAccount.deleteMany({
+        where: { userId, accountType: "paypal" },
+      });
+
+      if (isDefault) {
+        await db.bankAccount.updateMany({
+          where: { userId, isDefault: true },
+          data: { isDefault: false },
+        });
+      }
+
+      const account = await db.bankAccount.create({
+        data: {
+          userId,
+          bankName: "PayPal",
+          accountName: accountName.trim(),
+          paypalEmail: paypalEmail.toLowerCase().trim(),
+          accountType: "paypal",
+          isDefault: !!isDefault,
+          isVerified: false,
+        },
+      });
+
+      return NextResponse.json({ account }, { status: 201 });
+    }
+
+    // === Bank account ===
+    if (!bankName?.trim()) {
+      return NextResponse.json(
+        { error: "bankName مطلوب لحساب بنكي" },
+        { status: 400 }
+      );
+    }
+    if (!iban?.trim() && !accountNumber?.trim()) {
+      return NextResponse.json(
+        { error: "iban أو accountNumber مطلوب" },
+        { status: 400 }
+      );
+    }
+
+    // Check IBAN uniqueness if provided
+    if (iban?.trim()) {
+      const existing = await db.bankAccount.findFirst({
+        where: { iban: iban.trim().toUpperCase() },
+      });
+      if (existing && existing.userId !== userId) {
+        return NextResponse.json(
+          { error: "رقم الـ IBAN مسجل مسبقاً" },
+          { status: 409 }
+        );
+      }
+    }
+
+    if (isDefault) {
+      await db.bankAccount.updateMany({
+        where: { userId, isDefault: true },
+        data: { isDefault: false },
+      });
+    }
+
+    const account = await db.bankAccount.create({
+      data: {
+        userId,
+        bankName: bankName.trim(),
+        accountName: accountName.trim(),
+        iban: iban?.trim() ? iban.trim().toUpperCase() : null,
+        accountNumber: accountNumber?.trim() || null,
+        accountType: "bank",
+        isDefault: !!isDefault,
+        isVerified: false,
+      },
+    });
+
+    return NextResponse.json({ account }, { status: 201 });
+  } catch (error) {
+    console.error("POST /api/bank-accounts error:", error);
+    return NextResponse.json({ error: "حدث خطأ أثناء حفظ الحساب" }, { status: 500 });
+  }
+}
+
+// DELETE /api/bank-accounts?id=xxx&userId=xxx
 export async function DELETE(request: NextRequest) {
-  const user = await requireAuth();
-  if (!user) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    const userId = searchParams.get("userId");
+
+    if (!id || !userId) {
+      return NextResponse.json({ error: "id و userId مطلوبة" }, { status: 400 });
+    }
+
+    await db.bankAccount.deleteMany({
+      where: { id, userId },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("DELETE /api/bank-accounts error:", error);
+    return NextResponse.json({ error: "حدث خطأ أثناء حذف الحساب" }, { status: 500 });
   }
-
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-  if (!id) {
-    return NextResponse.json({ error: "ID مطلوب" }, { status: 400 });
-  }
-
-  await db.bankAccount.deleteMany({
-    where: { id, userId: user.id },
-  });
-
-  return NextResponse.json({ success: true });
 }
