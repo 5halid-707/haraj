@@ -4,13 +4,19 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
+// Ensure DATABASE_URL is set for SQLite
+const dbUrl = process.env.DATABASE_URL || 'file:/tmp/haraj.db'
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = dbUrl
+}
+
 function createClient() {
   try {
     return new PrismaClient({
       log: ['error'],
       datasources: {
         db: {
-          url: process.env.DATABASE_URL || 'file:/tmp/haraj.db',
+          url: dbUrl,
         },
       },
     })
