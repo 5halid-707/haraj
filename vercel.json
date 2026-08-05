@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "DATABASE_URL=file:./db/haraj.db bun run build:prod",
+  "buildCommand": "prisma generate && next build",
   "installCommand": "bun install"
 }
