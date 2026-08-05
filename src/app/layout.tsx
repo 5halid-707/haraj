@@ -16,12 +16,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "أوبر - منصة النقل والتوصيل الذكية",
-  description: "احجز رحلتك في دقائق، توصيل طعام، شحن طرود، وأكثر. خدمات نقل ذكية في جميع مدن المملكة.",
-  keywords: ["أوبر", "uber", "توصيل", "نقل", "تاكسي", "توصيل طعام", "شحن"],
-  authors: [{ name: "أوبر" }],
-  creator: "أوبر",
-  publisher: "أوبر",
+  title: "حراج - سوق الإعلانات المبوبة الأول",
+  description: "حراج - أكبر سوق إعلانات مبوبة في السعودية. سيارات، عقارات، أجهزة، وظائف، وأكثر.",
+  keywords: ["حراج", "haraj", "سوق", "إعلانات", "مبوبة", "سيارات", "عقارات"],
+  authors: [{ name: "حراج" }],
+  creator: "حراج",
+  publisher: "حراج",
   manifest: "/manifest.json",
   icons: {
     icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
