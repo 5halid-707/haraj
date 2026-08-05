@@ -117,6 +117,21 @@ async function seedIfEmpty() {
     }
   }
 
+  // More demo listings
+  const furnitureCat = allCats.find(c => c.slug === 'furniture')
+  const jobsCat = allCats.find(c => c.slug === 'jobs')
+  const servicesCat = allCats.find(c => c.slug === 'services')
+
+  if (adminUser && furnitureCat) {
+    await db.listing.create({ data: { title: 'طاولة طعام خشب زان 6 كراسي', description: 'طاولة طعام خشب الزان 6 كراسي فخمة بحالة ممتازة', price: 2500, currency: 'ريال', city: 'الرياض', district: 'العليا', categoryId: furnitureCat.id, userId: adminUser.id, images: JSON.stringify(['/categories/furniture.svg']), status: 'active', views: 75, condition: 'مستعمل', phone: '0575015019', whatsapp: '966575015019' } })
+  }
+  if (adminUser && jobsCat) {
+    await db.listing.create({ data: { title: 'مطلوب محاسب بخبرة 3 سنوات', description: 'مطلوب محاسب بخبرة لا تقل عن 3 سنوات في الشركات التجارية', price: 0, currency: 'ريال', city: 'جدة', district: 'الروضة', categoryId: jobsCat.id, userId: adminUser.id, images: JSON.stringify(['/categories/jobs.svg']), status: 'active', views: 156, phone: '0575015019', whatsapp: '966575015019' } })
+  }
+  if (adminUser && servicesCat) {
+    await db.listing.create({ data: { title: 'خدمات نقل عفش مع الفك والتركيب', description: 'نقل عفش أثاث مع الفك والتركيب والتغليف بأسعار منافسة', price: 500, currency: 'ريال', city: 'الدمام', categoryId: servicesCat.id, userId: adminUser.id, images: JSON.stringify(['/categories/services.svg']), status: 'active', views: 92, phone: '0575015019', whatsapp: '966575015019' } })
+  }
+
   console.log('[init-db] Seed complete')
 }
 

@@ -138,7 +138,7 @@ type UserListing = {
 // ===== CONSTANTS =====
 const CATEGORY_ICONS: Record<string, typeof Car> = {
   cars: Car,
-  realestate: Building2,
+  "real-estate": Building2,
   electronics: Smartphone,
   furniture: Sofa,
   jobs: Briefcase,

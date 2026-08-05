@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="400" height="300" fill="#8b4513"/>
+  <rect x="80" y="150" width="240" height="80" rx="10" fill="#a0522d"/>
+  <rect x="80" y="150" width="240" height="30" rx="5" fill="#cd853f"/>
+  <rect x="90" y="220" width="15" height="40" fill="#8b4513"/>
+  <rect x="295" y="220" width="15" height="40" fill="#8b4513"/>
+  <text x="200" y="280" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">أثاث</text>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="400" height="300" fill="#2d5016"/>
+  <path d="M50 250 Q50 180 100 180 L300 180 Q350 180 350 250 Z" fill="#3d6b1f"/>
+  <text x="200" y="240" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">مزرعة</text>
+</svg>

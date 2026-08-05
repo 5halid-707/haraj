@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="400" height="300" fill="#4a1a3a"/>
+  <path d="M160 80 L180 60 L220 60 L240 80 L260 120 L240 240 L160 240 L140 120 Z" fill="#6a2a5a"/>
+  <text x="200" y="260" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">أزياء</text>
+</svg>
