@@ -1,41 +1,21 @@
 import { initDb } from "@/lib/init-db";
-import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth-helpers";
+import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth-helpers";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try { await initDb(); } catch(e) {}
   const admin = await requireAdmin();
-  if (!admin) {
-    return NextResponse.json({ error: "غير مصرح لك" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+
+  try {
+    const listings = await db.listing.findMany({
+      include: { user: { select: { username: true } }, category: { select: { name: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+    return NextResponse.json({ listings });
+  } catch (error) {
+    return NextResponse.json({ listings: [] });
   }
-
-  const { searchParams } = new URL(request.url);
-  const status = searchParams.get("status");
-  const featured = searchParams.get("featured");
-
-  const where: Record<string, unknown> = {};
-  if (status && status !== "all") where.status = status;
-  if (featured === "true") where.isFeatured = true;
-
-  const listings = await db.listing.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: {
-        select: {
-          id: true,
-          username: true,
-          phone: true,
-          isVerified: true,
-        },
-      },
-      category: { select: { name: true, slug: true } },
-      _count: {
-        select: { comments: true, favorites: true },
-      },
-    },
-  });
-
-  return NextResponse.json({ listings });
 }

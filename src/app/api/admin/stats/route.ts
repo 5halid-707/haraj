@@ -1,63 +1,32 @@
 import { initDb } from "@/lib/init-db";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth-helpers";
 
-// GET /api/admin/stats
-// Returns ride-sharing dashboard stats:
-//   totalUsers, totalDrivers, totalTrips, completedTrips, totalRevenue
-//   plus a few extras: pendingDrivers, activeTrips, cancelledTrips, unpaidTrips
 export async function GET() {
   try { await initDb(); } catch(e) {}
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+
   try {
-    const [
-      totalUsers,
-      totalDrivers,
-      pendingDrivers,
-      approvedDrivers,
-      totalTrips,
-      completedTrips,
-      activeTrips,
-      cancelledTrips,
-      unpaidTripsCount,
-      revenueAgg,
-      unpaidAgg,
-    ] = await Promise.all([
-      db.user.count({ where: { isAdmin: false } }),
-      db.driver.count(),
-      db.driver.count({ where: { approvalStatus: "pending" } }),
-      db.driver.count({ where: { isApproved: true } }),
-      db.trip.count(),
-      db.trip.count({ where: { status: "completed" } }),
-      db.trip.count({
-        where: { status: { in: ["pending", "accepted", "driver_arrived", "ongoing"] } },
-      }),
-      db.trip.count({ where: { status: "cancelled" } }),
-      db.trip.count({ where: { unpaidAmount: { gt: 0 } } }),
-      db.trip.aggregate({
-        where: { status: "completed" },
-        _sum: { finalPrice: true },
-      }),
-      db.trip.aggregate({
-        where: { unpaidAmount: { gt: 0 } },
-        _sum: { unpaidAmount: true },
-      }),
+    const [totalUsers, totalListings, activeListings, totalCategories, featuredListings, totalViews] = await Promise.all([
+      db.user.count(),
+      db.listing.count(),
+      db.listing.count({ where: { status: "active" } }),
+      db.category.count(),
+      db.listing.count({ where: { isFeatured: true } }),
+      db.listing.aggregate({ _sum: { views: true } }),
     ]);
 
     return NextResponse.json({
       totalUsers,
-      totalDrivers,
-      pendingDrivers,
-      approvedDrivers,
-      totalTrips,
-      completedTrips,
-      activeTrips,
-      cancelledTrips,
-      unpaidTrips: unpaidTripsCount,
-      totalRevenue: revenueAgg._sum.finalPrice || 0,
-      totalUnpaid: unpaidAgg._sum.unpaidAmount || 0,
+      totalListings,
+      activeListings,
+      totalCategories,
+      featuredListings,
+      totalViews: totalViews._sum.views || 0,
     });
   } catch (error) {
-    console.error("GET /api/admin/stats error:", error);
-    return NextResponse.json({ error: "حدث خطأ أثناء جلب الإحصائيات" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch stats", detail: String(error).substring(0, 200) }, { status: 500 });
   }
 }

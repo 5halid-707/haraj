@@ -1,34 +1,20 @@
 import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export async function GET(request: NextRequest) {
   try { await initDb(); } catch(e) {}
   const admin = await requireAdmin();
-  if (!admin) {
-    return NextResponse.json({ error: "غير مصرح لك" }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+
+  try {
+    const logs = await db.activityLog.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    });
+    return NextResponse.json({ logs });
+  } catch (error) {
+    return NextResponse.json({ logs: [] });
   }
-
-  const { searchParams } = new URL(request.url);
-  const limit = parseInt(searchParams.get("limit") || "50");
-  const action = searchParams.get("action");
-  const userId = searchParams.get("userId");
-
-  const where: Record<string, unknown> = {};
-  if (action) where.action = action;
-  if (userId) where.userId = userId;
-
-  const activities = await db.activityLog.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    take: limit,
-    include: {
-      user: {
-        select: { id: true, username: true, email: true },
-      },
-    },
-  });
-
-  return NextResponse.json({ activities });
 }

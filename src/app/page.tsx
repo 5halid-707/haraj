@@ -77,7 +77,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatPrice, formatArabicDate, formatNumber, formatKilometers } from "@/lib/format";
 import { AuthDialog } from "@/components/auth-dialog";
 import { UserMenu } from "@/components/user-menu";
-import { AdminDashboard } from "@/components/admin-dashboard";
+import AdminDashboard from "@/components/admin-dashboard";
 import { UserWallet } from "@/components/user-wallet";
 import { NotificationBell } from "@/components/notification-bell";
 import { PaymentDialog } from "@/components/payment-dialog";

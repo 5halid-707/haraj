@@ -1,50 +1,40 @@
 import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export async function GET(request: NextRequest) {
   try { await initDb(); } catch(e) {}
-  try {
-    const { searchParams } = new URL(request.url);
-    const adminId = searchParams.get("adminId");
-    const filter = searchParams.get("filter") || "all";
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
 
-    if (adminId) {
-      const admin = await db.user.findUnique({ where: { id: adminId } });
-      if (!admin?.isAdmin) {
-        return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
-      }
-    }
+  const { searchParams } = new URL(request.url);
+  const search = searchParams.get("search") || "";
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = 20;
+  const offset = (page - 1) * limit;
 
-    let where: any = {};
-    if (filter === "blocked") where = { isBlocked: true };
-    else if (filter === "riders") where = { isDriver: false, isAdmin: false };
-    else if (filter === "drivers") where = { isDriver: true };
+  const where = search ? {
+    OR: [
+      { username: { contains: search } },
+      { email: { contains: search } },
+      { phone: { contains: search } },
+    ]
+  } : {};
 
-    const users = await db.user.findMany({
+  const [users, total] = await Promise.all([
+    db.user.findMany({
       where,
       select: {
-        id: true, name: true, email: true, phone: true,
-        city: true, region: true, isDriver: true, isAdmin: true,
-        isBlocked: true, isVerified: true, rating: true, tripsCount: true,
-        walletBalance: true, currentLat: true, currentLng: true,
-        blockedAt: true, blockReason: true, blockNotes: true, createdAt: true,
+        id: true, username: true, email: true, phone: true, city: true,
+        isVerified: true, isAdmin: true, rating: true, createdAt: true,
       },
       orderBy: { createdAt: "desc" },
-    });
+      take: limit,
+      skip: offset,
+    }),
+    db.user.count({ where }),
+  ]);
 
-    const driverUserIds = users.filter((u) => u.isDriver).map((u) => u.id);
-    const drivers = driverUserIds.length > 0
-      ? await db.driver.findMany({
-          where: { userId: { in: driverUserIds } },
-          select: { userId: true, carModel: true, carPlate: true, carColor: true, isOnline: true, isApproved: true, approvalStatus: true, rating: true, tripsCount: true, earnings: true },
-        })
-      : [];
-    const driverMap = new Map(drivers.map((d) => [d.userId, d]));
-
-    return NextResponse.json(users.map((u) => ({ ...u, driverInfo: driverMap.get(u.id) || null })));
-  } catch (error) {
-    console.error("Admin users list error:", error);
-    return NextResponse.json({ error: "خطأ في الخادم" }, { status: 500 });
-  }
+  return NextResponse.json({ users, total, page, totalPages: Math.ceil(total / limit) });
 }
