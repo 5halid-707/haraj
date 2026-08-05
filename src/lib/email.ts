@@ -179,5 +179,5 @@ export function transactionStatusEmail(user: { username: string; email: string }
 // Get admin email from settings or env
 export async function getAdminEmail(): Promise<string> {
   const settings = await db.siteSettings.findFirst();
-  return settings?.adminEmail || process.env.ADMIN_EMAIL || "grouthhacker@gmail.com";
+  return settings?.adminEmail || process.env.ADMIN_EMAIL || "khalid-alharbi@zohomail.sa";
 }
