@@ -1,3 +1,4 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -5,6 +6,7 @@ import { db } from "@/lib/db";
 
 // GET user's favorites
 export async function GET() {
+  try { await initDb(); } catch(e) {}
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -38,6 +40,7 @@ export async function GET() {
 
 // POST toggle favorite
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {

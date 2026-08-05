@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { initDb } from "@/lib/init-db";
 
 export type SessionUser = {
   id: string;
@@ -11,22 +12,23 @@ export type SessionUser = {
 };
 
 export async function getAuthenticatedUser() {
+  try { await initDb(); } catch(e) {}
   const session = await getServerSession(authOptions);
   if (!session?.user) return null;
-   
   const userId = (session.user as any).id;
   if (!userId) return null;
   const user = await db.user.findUnique({ where: { id: userId } });
   return user;
 }
 
-export async function requireAuth() {
-  const user = await getAuthenticatedUser();
-  return user;
-}
-
 export async function requireAdmin() {
   const user = await getAuthenticatedUser();
   if (!user || !user.isAdmin) return null;
+  return user;
+}
+
+export async function requireAuth() {
+  const user = await getAuthenticatedUser();
+  if (!user) return null;
   return user;
 }

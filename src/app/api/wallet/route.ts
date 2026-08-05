@@ -1,9 +1,11 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 // GET /api/wallet?userId=xxx
 // - Returns user's wallet balance and recent transactions
 export async function GET(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
@@ -59,6 +61,7 @@ export async function GET(request: NextRequest) {
 //   type=deposit/refund -> increment
 //   type=withdrawal/trip_payment/fee -> decrement
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const body = await request.json();
     const { userId, type, amount, description, tripId } = body;

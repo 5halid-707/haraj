@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { initDb } from "@/lib/init-db";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 

@@ -1,3 +1,4 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
@@ -5,6 +6,7 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  try { await initDb(); } catch(e) {}
   try {
     const { id } = await params;
     const listing = await db.listing.findUnique({

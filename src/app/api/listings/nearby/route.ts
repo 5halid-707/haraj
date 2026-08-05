@@ -1,8 +1,10 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 // GET: find listings near a GPS location
 export async function GET(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   const { searchParams } = new URL(request.url);
   const lat = parseFloat(searchParams.get("lat") || "0");
   const lng = parseFloat(searchParams.get("lng") || "0");

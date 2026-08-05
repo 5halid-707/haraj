@@ -1,8 +1,10 @@
+import { initDb } from "@/lib/init-db";
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 
 export async function GET() {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });

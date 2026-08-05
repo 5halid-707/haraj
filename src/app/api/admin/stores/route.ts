@@ -1,9 +1,11 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 import { logActivity } from "@/lib/activity";
 
 export async function GET() {
+  try { await initDb(); } catch(e) {}
   const admin = await requireAdmin();
   if (!admin) {
     return NextResponse.json({ error: "غير مصرح لك" }, { status: 403 });
@@ -26,6 +28,7 @@ export async function GET() {
 
 // PATCH: verify a store / update subscription
 export async function PATCH(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   const admin = await requireAdmin();
   if (!admin) {
     return NextResponse.json({ error: "غير مصرح لك" }, { status: 403 });

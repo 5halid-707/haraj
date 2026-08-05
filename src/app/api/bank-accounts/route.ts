@@ -1,9 +1,11 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 // GET /api/bank-accounts?userId=xxx
 // - Returns all bank/paypal accounts for the user
 export async function GET(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
@@ -28,6 +30,7 @@ export async function GET(request: NextRequest) {
 // Body for bank: { userId, bankName, accountName, iban?, accountNumber?, isDefault? }
 // Body for paypal: { userId, accountType: "paypal", paypalEmail, accountName, isDefault? }
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const body = await request.json();
     const {
@@ -149,6 +152,7 @@ export async function POST(request: NextRequest) {
 
 // DELETE /api/bank-accounts?id=xxx&userId=xxx
 export async function DELETE(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

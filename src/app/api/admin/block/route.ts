@@ -1,9 +1,11 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 // POST /api/admin/block
 // Body: { userId, adminId, action: "block" | "unblock", reason?, notes? }
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const body = await request.json();
     const { userId, adminId, action, reason, notes } = body;

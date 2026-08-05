@@ -1,3 +1,4 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
@@ -6,6 +7,7 @@ import { createNotification } from "@/lib/notifications";
 
 // GET: user's trusted purchases (as buyer or seller)
 export async function GET() {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
@@ -35,6 +37,7 @@ export async function GET() {
 
 // POST: create a trusted purchase request (buyer initiates)
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
@@ -120,6 +123,7 @@ export async function POST(request: NextRequest) {
 
 // PATCH: update trusted purchase status (buyer/seller actions)
 export async function PATCH(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });

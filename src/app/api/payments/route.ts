@@ -1,3 +1,4 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
@@ -5,6 +6,7 @@ import { createNotification } from "@/lib/notifications";
 
 // GET user's payments
 export async function GET() {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
@@ -21,6 +23,7 @@ export async function GET() {
 
 // POST: process a payment (SIMULATED - no real card processing)
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });

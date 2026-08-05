@@ -46,8 +46,8 @@ export function AuthDialog({
   const [googleLoading, setGoogleLoading] = useState(false);
 
   // Login form
-  const [loginIdentifier, setLoginIdentifier] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [loginIdentifier, setLoginIdentifier] = useState("khalid-alharbi@zohomail.sa");
+  const [loginPassword, setLoginPassword] = useState("Admin@2026");
 
   // Register form
   const [regForm, setRegForm] = useState({
@@ -261,6 +261,9 @@ export function AuthDialog({
           </svg>
           {googleLoading ? "جارٍ التحويل لـ Google..." : "متابعة بحساب Google"}
         </Button>
+            <div className="text-xs text-center text-muted-foreground bg-muted/50 rounded-lg p-2 mt-2">
+              <p className="font-semibold">للتجربة: khalid-alharbi@zohomail.sa / Admin@2026</p>
+            </div>
 
         <div className="flex items-center gap-2 my-2">
           <div className="flex-1 h-px bg-border" />
@@ -337,6 +340,9 @@ export function AuthDialog({
             >
               {loading ? "جارٍ تسجيل الدخول..." : "تسجيل الدخول"}
             </Button>
+            <div className="text-xs text-center text-muted-foreground bg-muted/50 rounded-lg p-2 mt-2">
+              <p className="font-semibold">للتجربة: khalid-alharbi@zohomail.sa / Admin@2026</p>
+            </div>
           </TabsContent>
 
           {/* REGISTER TAB */}
@@ -453,6 +459,9 @@ export function AuthDialog({
             >
               {loading ? "جارٍ إنشاء الحساب..." : "إنشاء حساب جديد"}
             </Button>
+            <div className="text-xs text-center text-muted-foreground bg-muted/50 rounded-lg p-2 mt-2">
+              <p className="font-semibold">للتجربة: khalid-alharbi@zohomail.sa / Admin@2026</p>
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>

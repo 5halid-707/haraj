@@ -80,6 +80,43 @@ async function seedIfEmpty() {
   for (const cat of categories) {
     await db.category.create({ data: cat })
   }
+  // Create demo listings
+  const adminUser = await db.user.findFirst({ where: { isAdmin: true } })
+  const allCats = await db.category.findMany()
+  const carsCat = allCats.find(c => c.slug === 'cars')
+  const estateCat = allCats.find(c => c.slug === 'real-estate')
+  const electronicsCat = allCats.find(c => c.slug === 'electronics')
+
+  if (adminUser && carsCat) {
+    const listings = [
+      { title: 'تويوتا كامري 2022 فل كامل', description: 'تويوتا كامري 2022 فل اوبشن كامل ماشية 45 الف كم بحالة الوكالة', price: 85000, currency: 'ريال', city: 'الرياض', district: 'النسيم', categoryId: carsCat.id, userId: adminUser.id, images: JSON.stringify(['/placeholder.svg']), status: 'active', isFeatured: true, views: 245, year: 2022, kilometers: 45000, condition: 'مستعمل', phone: '0575015019', whatsapp: '966575015019' },
+      { title: 'هيونداي سوناتا 2021', description: 'هيونداي سوناتا 2021 فل اوبشن ماشية 60 الف كم بحالة ممتازة', price: 55000, currency: 'ريال', city: 'جدة', district: 'الروضة', categoryId: carsCat.id, userId: adminUser.id, images: JSON.stringify(['/placeholder.svg']), status: 'active', views: 180, year: 2021, kilometers: 60000, condition: 'مستعمل', phone: '0575015019', whatsapp: '966575015019' },
+      { title: 'نيسان باترول 2020', description: 'نيسان باترول 2020 فل كامل ماشية 80 الف كم بحالة الوكالة', price: 180000, currency: 'ريال', city: 'الدمام', categoryId: carsCat.id, userId: adminUser.id, images: JSON.stringify(['/placeholder.svg']), status: 'active', isFeatured: true, views: 320, year: 2020, kilometers: 80000, condition: 'مستعمل', phone: '0575015019', whatsapp: '966575015019' },
+    ]
+    for (const l of listings) {
+      await db.listing.create({ data: l })
+    }
+  }
+
+  if (adminUser && estateCat) {
+    const estateListings = [
+      { title: 'فيلا 400م في حي الياسمين', description: 'فيلا دورين 400م مربع 5 غرف 4 حمامات بموقف سيارة', price: 1200000, currency: 'ريال', city: 'الرياض', district: 'الياسمين', categoryId: estateCat.id, userId: adminUser.id, images: JSON.stringify(['/placeholder.svg']), status: 'active', isFeatured: true, views: 410, phone: '0575015019', whatsapp: '966575015019' },
+      { title: 'شقة 180م في حي الروضة', description: 'شقة 180م مربع 3 غرف 2 حمامات مطبخ راكب', price: 450000, currency: 'ريال', city: 'جدة', district: 'الروضة', categoryId: estateCat.id, userId: adminUser.id, images: JSON.stringify(['/placeholder.svg']), status: 'active', views: 195, phone: '0575015019', whatsapp: '966575015019' },
+    ]
+    for (const l of estateListings) {
+      await db.listing.create({ data: l })
+    }
+  }
+
+  if (adminUser && electronicsCat) {
+    const elecListings = [
+      { title: 'آيفون 15 برو ماكس 256GB', description: 'آيفون 15 برو ماكس 256 جيجا لون تيتانيوم طبيعي بحالة الوكالة', price: 5499, currency: 'ريال', city: 'الرياض', categoryId: electronicsCat.id, userId: adminUser.id, images: JSON.stringify(['/placeholder.svg']), status: 'active', views: 89, condition: 'جديد', phone: '0575015019', whatsapp: '966575015019' },
+    ]
+    for (const l of elecListings) {
+      await db.listing.create({ data: l })
+    }
+  }
+
   console.log('[init-db] Seed complete')
 }
 

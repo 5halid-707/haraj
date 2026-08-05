@@ -1,3 +1,4 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
@@ -7,6 +8,7 @@ import { db } from "@/lib/db";
 // - Finds existing user by email, or creates new one
 // - Returns user record (client is expected to also sign in via NextAuth)
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const body = await request.json();
     const { googleId, email, name, picture } = body;

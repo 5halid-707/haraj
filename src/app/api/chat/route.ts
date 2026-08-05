@@ -1,3 +1,4 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
@@ -5,6 +6,7 @@ import { db } from "@/lib/db";
 // - Returns messages for the trip
 // - Marks messages where receiverId == userId as read
 export async function GET(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const { searchParams } = new URL(request.url);
     const tripId = searchParams.get("tripId");
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
 // POST /api/chat
 // Body: { tripId, senderId, receiverId, message, messageType?, fileData?, fileName? }
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const body = await request.json();
     const {

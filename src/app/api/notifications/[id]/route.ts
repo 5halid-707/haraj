@@ -1,3 +1,4 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
@@ -6,6 +7,7 @@ export async function PATCH(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });

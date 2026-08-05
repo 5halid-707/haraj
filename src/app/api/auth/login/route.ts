@@ -1,8 +1,10 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const body = await req.json();
     const { identifier, password } = body;

@@ -1,9 +1,11 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 
 // GET user's transactions
 export async function GET() {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
@@ -46,6 +48,7 @@ export async function GET() {
 
 // POST: create a new transaction request (withdrawal or deposit notification)
 export async function POST(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });

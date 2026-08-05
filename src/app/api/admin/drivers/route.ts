@@ -1,9 +1,11 @@
+import { initDb } from "@/lib/init-db";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 // GET /api/admin/drivers?status=pending&adminId=xxx
 // status values: "pending" | "approved" | "rejected" | "all"
 export async function GET(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || "all";

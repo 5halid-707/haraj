@@ -1,7 +1,9 @@
+import { initDb } from "@/lib/init-db";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET() {
+  try { await initDb(); } catch(e) {}
   const settings = await db.siteSettings.findFirst({
     select: {
       siteName: true,
