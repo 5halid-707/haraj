@@ -15,7 +15,8 @@
     "db:reset": "prisma migrate reset",
     "db:seed": "bunx tsx scripts/seed.ts",
     "deploy": "vercel --prod",
-    "switch-to-postgres": "node scripts/switch-to-postgres.js"
+    "switch-to-postgres": "node scripts/switch-to-postgres.js",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

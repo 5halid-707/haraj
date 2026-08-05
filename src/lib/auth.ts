@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { initDb } from "@/lib/init-db";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { logActivity } from "@/lib/activity";
@@ -23,6 +24,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "كلمة المرور", type: "password" },
       },
       async authorize(credentials) {
+    try { await initDb(); } catch(e) { console.error("[auth] initDb:", e); }
         if (!credentials?.identifier || !credentials?.password) {
           return null;
         }

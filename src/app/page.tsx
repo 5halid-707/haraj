@@ -1228,7 +1228,7 @@ function ListingCard({
       <div className="aspect-[4/3] bg-muted relative overflow-hidden">
         {coverImage ? (
           <img
-            src={coverImage}
+            src={coverImage || "/placeholder.svg"}
             alt={listing.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"

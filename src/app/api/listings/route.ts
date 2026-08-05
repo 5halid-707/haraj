@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { initDb } from "@/lib/init-db";
 import { logActivity } from "@/lib/activity";
 
 export async function GET(request: NextRequest) {
+  try { await initDb(); } catch(e) {}
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
