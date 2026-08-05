@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ listings, totalCount, hasMore: offset + limit < totalCount });
   } catch (error) {
     console.error("Error fetching listings:", error);
-    return NextResponse.json({ error: "Failed to fetch listings" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch listings", detail: String(error).substring(0, 300) }, { status: 500 });
   }
 }
 
