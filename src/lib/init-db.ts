@@ -1,25 +1,26 @@
 import { db } from './db'
 import bcrypt from 'bcryptjs'
-import { execSync } from 'child_process'
 
 let initPromise: Promise<void> | null = null
+
+const SQL_STATEMENTS = [
+]
 
 async function ensureSchema() {
   try {
     await db.user.count()
   } catch (e) {
-    console.log('[init-db] Tables missing, running prisma db push...')
-    try {
-      execSync('npx prisma db push --accept-data-loss --skip-generate', {
-        stdio: 'pipe',
-        env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL || 'file:/tmp/haraj.db' },
-        timeout: 30000,
-      })
-      console.log('[init-db] prisma db push completed')
-    } catch (e) {
-      console.error('[init-db] prisma db push failed:', e)
-      throw e
+    console.log('[init-db] Creating', SQL_STATEMENTS.length, 'tables...')
+    for (const sql of SQL_STATEMENTS) {
+      try {
+        await db.$executeRawUnsafe(sql)
+      } catch (e: any) {
+        if (!e.message?.includes('already exists')) {
+          console.error('[init-db] SQL error:', e.message?.substring(0, 100))
+        }
+      }
     }
+    console.log('[init-db] Tables created')
   }
 }
 
@@ -28,11 +29,10 @@ async function seedIfEmpty() {
   if (userCount > 0) return
 
   console.log('[init-db] Seeding...')
-
   const adminPass = await bcrypt.hash('Admin@2026', 10)
   await db.user.create({
     data: {
-      name: 'أبو سطام',
+      username: 'أبو سطام',
       email: 'khalid-alharbi@zohomail.sa',
       phone: '0575015019',
       password: adminPass,
@@ -59,7 +59,6 @@ async function seedIfEmpty() {
   for (const cat of categories) {
     await db.category.create({ data: cat })
   }
-
   console.log('[init-db] Seed complete')
 }
 
