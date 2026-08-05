@@ -1,3 +1,15 @@
+// ====================================================================
+// PRODUCTION SCHEMA - استخدم هذا الملف عند النشر على Vercel/Netlify
+// ====================================================================
+// لتفعيل PostgreSQL في الإنتاج:
+// 1. انسخ محتوى هذا الملف إلى prisma/schema.prisma
+// 2. غيّر provider إلى "postgresql"
+// 3. اضبط DATABASE_URL في متغيرات البيئة على Vercel
+//
+// أو ببساطة: استبدل سطر provider في schema.prisma الحالي:
+//   provider = "sqlite"  →  provider = "sqlite"
+// ====================================================================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,177 +19,286 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ===== نفس النماذج أدناه (متطابقة مع SQLite) =====
+
 model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  phone         String   @unique
-  password      String
+  id            String    @id @default(cuid())
+  username      String    @unique
+  email         String    @unique
+  phone         String?   @unique
+  password      String?
   city          String?
-  region        String?
   avatar        String?
-  isVerified    Boolean  @default(false)
-  isAdmin       Boolean  @default(false)
-  isDriver      Boolean  @default(false)
-  isBlocked     Boolean  @default(false)
-  blockedAt     DateTime?
-  blockReason   String?
-  walletBalance Float   @default(0)
-  rating        Float   @default(5)
-  tripsCount    Int     @default(0)
-  currentLat    Float?
-  currentLng    Float?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  trips        Trip[]
-  transactions Transaction[]
-  bankAccounts BankAccount[]
+  isVerified    Boolean   @default(false)
+  isAdmin       Boolean   @default(false)
+  rating        Float     @default(5.0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  listings      Listing[]
+  comments      Comment[]
+  favorites     Favorite[]
+  sessions      Session[]
+  accounts      Account[]
+  bankAccounts  BankAccount[]
+  transactions  Transaction[]
+  adminTransactions Transaction[] @relation("AdminTransactions")
   notifications Notification[]
-  driver       Driver?
+  payments      Payment[]
+  affiliateCode String?   @unique
+  referredById  String?
+  referredBy    User?     @relation("AffiliateReferrals", fields: [referredById], references: [id])
+  referrals     User[]    @relation("AffiliateReferrals")
+  affiliateEarnings AffiliateEarning[] @relation("AffiliateEarningsAsAffiliate")
+  earningsAsReferred AffiliateEarning[] @relation("ReferredUser")
+  couponsRedeemed CouponRedemption[]
+  activities    ActivityLog[]
 }
 
-model Driver {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  carModel      String
-  carPlate      String
-  carColor      String
-  carYear       Int?
-  licenseNumber String
-  licenseExpiry DateTime?
-  isOnline      Boolean  @default(false)
-  isVerified    Boolean  @default(false)
-  isApproved    Boolean  @default(false)
-  approvalStatus String @default("pending")
-  rejectionReason String?
-  rating        Float   @default(5)
-  tripsCount    Int     @default(0)
-  earnings      Float   @default(0)
-  currentLat    Float?
-  currentLng    Float?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  documents     DriverDocument[]
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  icon      String?
+  parentId  String?
+  parent    Category? @relation("CategoryParent", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryParent")
+  listings  Listing[]
+  createdAt DateTime  @default(now())
 }
 
-model DriverDocument {
-  id            String   @id @default(cuid())
-  driverId      String
-  driver        Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  type          String
-  fileName      String
-  fileUrl       String
-  fileData      String?
-  fileSize      Int?
-  mimeType      String?
-  status        String   @default("pending")
-  uploadedAt    DateTime @default(now())
+model Listing {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  price       Int
+  currency    String     @default("ريال")
+  city        String
+  district    String?
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  images      String
+  status      String     @default("active")
+  isFeatured  Boolean    @default(false)
+  isVerified  Boolean    @default(false)
+  views       Int        @default(0)
+  year        Int?
+  kilometers  Int?
+  condition   String?
+  phone       String
+  whatsapp    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  comments    Comment[]
+  favorites   Favorite[]
 }
 
-model Trip {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  driverId      String?
-  
-  serviceType   String   @default("ride")
-  fromAddress   String
-  fromCity      String?
-  toAddress     String
-  toCity        String?
-  fromLat       Float?
-  fromLng       Float?
-  toLat         Float?
-  toLng         Float?
-  
-  distance      Float    @default(0)
-  duration      Int      @default(0)
-  price         Float    @default(0)
-  finalPrice    Float    @default(0)
-  basePrice     Float    @default(0)
-  surgeMultiplier Float  @default(1)
-  
-  status        String   @default("pending")
-  paymentMethod String   @default("cash")
-  paymentStatus String   @default("pending")
-  
-  cancellationLocked Boolean @default(false)
-  cancellationRequest String?
-  cancellationReason  String?
-  
-  rating        Int?
-  review        String?
-  
-  driverArrivedAt DateTime?
-  startedAt    DateTime?
-  completedAt  DateTime?
-  cancelledAt  DateTime?
-  cancelReason String?
-  
-  waitingMinutes  Int    @default(0)
-  lateFee         Float  @default(0)
-  freeWaitingMinutes Int @default(3)
-  lateFeePerMinute Float  @default(2)
-  
-  cashReceived    Float?
-  unpaidAmount    Float  @default(0)
-  paymentConfirmed Boolean @default(false)
-  unpaidReportedToAdmin Boolean @default(false)
-  
-  createdAt     DateTime @default(now())
-  acceptedAt    DateTime?
+model Comment {
+  id        String   @id @default(cuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  username  String
+  content   String
+  phone     String?
+  createdAt DateTime @default(now())
 }
 
-model Transaction {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  type          String
-  amount        Float
-  description   String
-  status        String   @default("completed")
-  tripId        String?
-  createdAt     DateTime @default(now())
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  user      User     @relation(fields: [userId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 model BankAccount {
   id            String   @id @default(cuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bankName      String
   accountName   String
-  iban          String?
-  accountNumber String?
-  accountType   String   @default("bank")
-  paypalEmail   String?
+  iban          String   @unique
+  accountNumber String
+  swiftCode     String?
   isDefault     Boolean  @default(false)
-  isVerified    Boolean  @default(false)
+  transactions  Transaction[]
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
-model ChatMessage {
-  id            String   @id @default(cuid())
-  tripId        String
-  senderId      String
-  receiverId    String
-  message       String?
-  messageType   String   @default("text")
-  fileData      String?
-  fileName      String?
-  isRead        Boolean  @default(false)
-  createdAt     DateTime @default(now())
+model Transaction {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String
+  amount          Float
+  currency        String   @default("ريال")
+  status          String   @default("pending")
+  description     String?
+  bankAccountId   String?
+  bankAccount     BankAccount? @relation(fields: [bankAccountId], references: [id])
+  processedById   String?
+  processedBy     User?    @relation("AdminTransactions", fields: [processedById], references: [id])
+  processedAt     DateTime?
+  adminNote       String?
+  reference       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SiteSettings {
+  id              String   @id @default(cuid())
+  siteName        String   @default("حراج")
+  adminPhone      String   @default("0575015019")
+  adminWhatsApp   String   @default("0575015019")
+  adminEmail      String?
+  adminCity       String   @default("جدة")
+  adminBankName       String?
+  adminAccountName    String?
+  adminIBAN           String?
+  adminAccountNumber  String?
+  featuredPrice   Float    @default(50)
+  withdrawalFee   Float    @default(0)
+  minWithdrawal   Float    @default(100)
+  welcomeMessage  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Notification {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String
+  title      String
+  message    String
+  link       String?
+  isRead     Boolean  @default(false)
+  relatedId  String?
+  relatedType String?
+  createdAt  DateTime @default(now())
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose         String
+  listingId       String?
+  amount          Float
+  currency        String   @default("ريال")
+  method          String
+  cardLast4       String?
+  cardBrand       String?
+  reference       String   @unique
+  status          String   @default("pending")
+  failureReason   String?
+  processedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Coupon {
   id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  title         String
-  message       String
-  type          String   @default("system")
-  isRead        Boolean  @default(false)
+  code          String   @unique
+  description   String?
+  type          String
+  value         Float
+  maxRedemptions Int?
+  usedCount     Int      @default(0)
+  minAmount     Float    @default(0)
+  maxDiscount   Float?
+  validFrom     DateTime @default(now())
+  validUntil    DateTime?
+  isActive      Boolean  @default(true)
+  appliesTo     String   @default("all")
+  redemptions   CouponRedemption[]
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model CouponRedemption {
+  id          String   @id @default(cuid())
+  couponId    String
+  coupon      Coupon   @relation(fields: [couponId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentId   String?
+  discountAmount Float
+  createdAt   DateTime @default(now())
+
+  @@unique([couponId, userId])
+}
+
+model AffiliateEarning {
+  id            String   @id @default(cuid())
+  affiliateId   String
+  affiliate     User     @relation("AffiliateEarningsAsAffiliate", fields: [affiliateId], references: [id], onDelete: Cascade)
+  referredId    String
+  referred      User     @relation("ReferredUser", fields: [referredId], references: [id])
+  commissionRate Float
+  amount         Float
+  status         String  @default("pending")
+  transactionId  String?
+  paidAt         DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action      String
+  description String
+  ipAddress   String?
+  userAgent   String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+}
+
+model Banner {
+  id          String   @id @default(cuid())
+  title       String
+  imageUrl    String
+  linkUrl     String?
+  position    String   @default("home_top")
+  isActive    Boolean  @default(true)
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
