@@ -84,6 +84,9 @@ export const authOptions: NextAuthOptions = {
       : []),
   ],
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
+    },
     async signIn({ user, account, profile }) {
       // For Google sign-in, create user if doesn't exist (handled by adapter)
       if (account?.provider === "google" && user.email) {
